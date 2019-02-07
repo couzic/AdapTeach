@@ -31,14 +31,16 @@ export const GetNextAssessment = (userId: UserId) => async ({
   return null
 }
 
-// TODO: Select assessment which targets least number of inactive items
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
   nextAssessmentForScheduledItem: async (userId, scheduledBefore) => {
     const statement = `
     MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (objective:Objective) <-[target:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
-    WHERE learns.nextRepetition < {scheduledBefore}
-    WITH assessment, COUNT(target) as targets
-    WITH assessment, MIN(targets) as minTargets
+    WHERE learns.nextRepetition = 'ASAP'
+    OR    learns.nextRepetition < {scheduledBefore}
+    WITH  user, assessment, COUNT(target) as targets
+    WITH  user, assessment, MIN(targets) as minTargets
+    MATCH (user) -[learns:LEARNS]-> (objective:Objective) <-[target:ASSESSMENT_FOR]- (assessment)
+    WHERE learns.nextRepetition <> 'ASAP'
     RETURN assessment
     ORDER BY minTargets
     LIMIT 1`
