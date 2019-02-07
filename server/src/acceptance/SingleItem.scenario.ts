@@ -1,11 +1,11 @@
 import { expect } from 'chai'
 
-import { cypher } from '../neo4j/cypher'
 import { Core, CoreDependencies, createCore } from '../core/Core'
 import { createCoreGateway } from '../core/CoreGateway'
 import { AssessmentId } from '../domain/Assessment'
 import { Item } from '../domain/Item'
 import { User } from '../domain/User'
+import { cypher } from '../neo4j/cypher'
 import { ActivateAssessment } from '../use-case/contribute/assessment/ActivateAssessment'
 import { AddAssessedItem } from '../use-case/contribute/assessment/AddAssessedItem'
 import { CreateAssessment } from '../use-case/contribute/assessment/CreateAssessment'
@@ -18,6 +18,7 @@ import { GetNextAssessment } from '../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../use-case/user/CreateUser'
 
 describe('Single Item', () => {
+  const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
   let user: User
@@ -25,7 +26,7 @@ describe('Single Item', () => {
   beforeEach(async () => {
     await cypher.clearDb()
     dependencies = {
-      gateway: createCoreGateway(),
+      gateway,
       timeProvider: { now: () => 0 },
       repetitionScheduler: { next: () => Promise.resolve(1) }
     } as any

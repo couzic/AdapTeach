@@ -1,7 +1,7 @@
-import { cypher } from '../../neo4j/cypher'
 import { CoreDependencies } from '../../core/Core'
 import { ObjectiveId } from '../../domain/Objective'
 import { UserId } from '../../domain/User'
+import { cypher } from '../../neo4j/cypher'
 
 export interface AddLearningObjectiveGateway {
   addLearningObjective: (

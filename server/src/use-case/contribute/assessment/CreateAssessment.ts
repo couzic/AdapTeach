@@ -1,7 +1,7 @@
-import { cypher } from '../../../neo4j/cypher'
 import { UseCaseDependencies } from '../../../core/Core'
 import { Assessment, AssessmentFields } from '../../../domain/Assessment'
 import { McqSelection } from '../../../domain/Mcq'
+import { cypher } from '../../../neo4j/cypher'
 
 export interface CreateAssessmentGateway {
   createAssessment: (
@@ -20,7 +20,7 @@ export const CreateAssessment = (fields: AssessmentFields) => async ({
   })
 }
 
-export const createCreateAssessmentGateway = () => ({
+export const createCreateAssessmentGateway = (): CreateAssessmentGateway => ({
   createAssessment: async assessment => {
     const statement = `
             CREATE (assessment:Assessment {id: {id}, type: {type}, active: false})
