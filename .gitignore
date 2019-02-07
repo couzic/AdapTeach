@@ -24,3 +24,6 @@ yarn-error.log*
 
 # dependencies
 /server/node_modules
+
+# TODO
+/server/src/acceptance/TODO
