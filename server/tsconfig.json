@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false, // TODO Remove
+    "target": "esnext",
+    "lib": ["esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "noEmit": true,
+    "moduleResolution": "node",
+    "outDir": "build"
+  },
+  "include": ["src"]
+}
