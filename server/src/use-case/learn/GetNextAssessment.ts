@@ -31,12 +31,17 @@ export const GetNextAssessment = (userId: UserId) => async ({
   return null
 }
 
+// TODO: Select assessment which targets least number of inactive items
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
   nextAssessmentForScheduledItem: async (userId, scheduledBefore) => {
     const statement = `
-    MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (objective:Objective) <-[:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
+    MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (objective:Objective) <-[target:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
     WHERE learns.nextRepetition < {scheduledBefore}
-    RETURN assessment`
+    WITH assessment, COUNT(target) as targets
+    WITH assessment, MIN(targets) as minTargets
+    RETURN assessment
+    ORDER BY minTargets
+    LIMIT 1`
     const records = await cypher.send(statement, { userId, scheduledBefore })
     if (records.length === 0) return null
     return records[0].get('assessment').properties

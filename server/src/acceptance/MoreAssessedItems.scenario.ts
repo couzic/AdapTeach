@@ -13,10 +13,11 @@ import { SetAnswers } from '../use-case/contribute/assessment/SetAnswers'
 import { SetQuestion } from '../use-case/contribute/assessment/SetQuestion'
 import { CreateItem } from '../use-case/contribute/item/CreateItem'
 import { AddLearningObjective } from '../use-case/learn/AddLearningObjective'
+import { CheckAnswer } from '../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../use-case/user/CreateUser'
 
-describe('Two items, two assessments (first one tests one item, the other tests both items)', () => {
+describe('Two items, two assessments (first one targets one item, the other targets both items)', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
@@ -79,5 +80,18 @@ describe('Two items, two assessments (first one tests one item, the other tests 
     const next = await core.execute(GetNextAssessment(user.id))
     expect(next).not.to.be.null
     expect(next!.id).to.equal(easyAssessmentId)
+  })
+  describe("when both assessments passed and it's time for repetition", () => {
+    beforeEach(async () => {
+      dependencies.repetitionScheduler.next = () => Promise.resolve(1)
+      await core.execute(CheckAnswer(user.id, easyAssessmentId, 0))
+      await core.execute(CheckAnswer(user.id, hardAssessmentId, 0))
+      dependencies.timeProvider.now = () => 2
+    })
+    it('has easy next assessment', async () => {
+      const next = await core.execute(GetNextAssessment(user.id))
+      expect(next).not.to.be.null
+      expect(next!.id).to.equal(easyAssessmentId)
+    })
   })
 })
