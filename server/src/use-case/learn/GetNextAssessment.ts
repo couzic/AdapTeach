@@ -50,9 +50,11 @@ export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
   },
   nextAssessmentForNewItem: async userId => {
     const statement = `
-    MATCH (user:User {id: {userId}}) -[:LEARNS {nextRepetition: 'ASAP'}]-> (objective:Objective) <-[target:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
-    WITH assessment, COUNT(target) as targets
-    WITH assessment, MIN(targets) as minTargets
+    MATCH (user:User {id: {userId}}), (objective:Objective) <-[target:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
+    WHERE (user) -[:LEARNS {nextRepetition: 'ASAP'}]-> (objective) <-[target:ASSESSMENT_FOR]- (assessment)
+    OR    (user) -[:LEARNS]-> (:Composite) -[:COMPOSED_OF*]-> (objective) <-[target:ASSESSMENT_FOR]- (assessment)
+    WITH  assessment, COUNT(target) as targets
+    WITH  assessment, MIN(targets) as minTargets
     RETURN assessment
     ORDER BY minTargets
     LIMIT 1`
