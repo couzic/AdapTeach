@@ -38,8 +38,10 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
   },
   setNextRepetition: async (userId, assessmentId, time) => {
     const statement = `
-      MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (item:Item) <-[:ASSESSMENT_FOR]- (assessment:Assessment {id: {assessmentId}})
-      SET learns.nextRepetition = {time}`
+      MATCH (user:User {id: {userId}})
+      MATCH (item:Item) <-[:ASSESSMENT_FOR]- (assessment:Assessment {id: {assessmentId}})
+      MERGE (user) -[learns:LEARNS]-> (item)
+      SET   learns.nextRepetition = {time}`
     await cypher.send(statement, {
       userId,
       assessmentId,

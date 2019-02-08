@@ -1,14 +1,19 @@
-import { Core } from "../../core/Core";
-import { ItemId } from "../../domain/Item";
-import { CreateAssessment } from "../../use-case/contribute/assessment/CreateAssessment";
-import { AddAssessedItem } from "../../use-case/contribute/assessment/AddAssessedItem";
-import { SetQuestion } from "../../use-case/contribute/assessment/SetQuestion";
-import { SetAnswers } from "../../use-case/contribute/assessment/SetAnswers";
-import { ActivateAssessment } from "../../use-case/contribute/assessment/ActivateAssessment";
+import { Core } from '../../core/Core'
+import { ItemId } from '../../domain/Item'
+import { ObjectiveId } from '../../domain/Objective'
+import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment'
+import { AddAssessedItem } from '../../use-case/contribute/assessment/AddAssessedItem'
+import { AddPrerequisite } from '../../use-case/contribute/assessment/AddPrerequisite'
+import { CreateAssessment } from '../../use-case/contribute/assessment/CreateAssessment'
+import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers'
+import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion'
 
 export const createMcqFactory = (core: Core) => async (
   name: string,
-  items: ItemId[]
+  items: ItemId[],
+  options?: {
+    prerequisites?: ObjectiveId[]
+  }
 ) => {
   const { id: assessmentId } = await core.execute(
     CreateAssessment({ type: 'MCQ' })
@@ -21,6 +26,15 @@ export const createMcqFactory = (core: Core) => async (
     SetAnswers(assessmentId, [{ text: 'A', correct: true }, { text: 'B' }])
   )
   await core.execute(ActivateAssessment(assessmentId))
+  if (options) {
+    if (options.prerequisites) {
+      for (let i = 0, l = options.prerequisites.length; i < l; i++) {
+        await core.execute(
+          AddPrerequisite(assessmentId, options.prerequisites[i])
+        )
+      }
+    }
+  }
   return assessmentId
 }
 
