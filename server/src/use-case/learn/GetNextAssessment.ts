@@ -62,10 +62,12 @@ const baseQuery = `
       OR
       (assessment) -[:HAS_PREREQUISITE]-> (:Composite) -[:COMPOSED_OF*]-> (learnedPreq:Item)
     )
-  WITH  assessment, COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs
-  WITH  assessment, MIN(preqs) as minPreqs
+  OPTIONAL
+	  MATCH (user) -[tried:TRIED]-> (assessment)
+  WITH  assessment, COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs, exists((user) -[:TRIED]-> (assessment)) as hasBeenTried, tried.last as triedLast
+  WITH  assessment, MIN(preqs) as minPreqs, hasBeenTried, triedLast
   RETURN assessment
-  ORDER BY minPreqs
+  ORDER BY minPreqs, hasBeenTried, triedLast
   LIMIT 1`
 
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
@@ -77,10 +79,7 @@ export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
   },
   nextAssessmentForNewItem: async (userId, now) => {
     const statement = newItemMatchClause + baseQuery
-    const records = await cypher.send(statement, {
-      userId,
-      now
-    })
+    const records = await cypher.send(statement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties
   }

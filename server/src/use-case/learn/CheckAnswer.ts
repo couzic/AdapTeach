@@ -9,7 +9,8 @@ export interface CheckAnswerGateway {
   setNextRepetition: (
     userId: UserId,
     assessmentId: AssessmentId,
-    time: number
+    nextRepetition: number,
+    now: number
   ) => Promise<void>
 }
 
@@ -17,11 +18,20 @@ export const CheckAnswer = (
   userId: UserId,
   assessmentId: McqId,
   answerId: number
-) => async ({ gateway, repetitionScheduler }: CoreDependencies) => {
+) => async ({
+  gateway,
+  repetitionScheduler,
+  timeProvider
+}: CoreDependencies) => {
   const assessment = await gateway.getAssessment(assessmentId)
   const correct = assessment.answers[answerId].correct || false
   const nextRepetition = await repetitionScheduler.next()
-  await gateway.setNextRepetition(userId, assessmentId, nextRepetition)
+  await gateway.setNextRepetition(
+    userId,
+    assessmentId,
+    nextRepetition,
+    timeProvider.now()
+  )
   return Promise.resolve(correct)
 }
 
@@ -36,16 +46,19 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
     const nodeProperties = records[0].get('assessment').properties
     return { ...nodeProperties, answers: JSON.parse(nodeProperties.answers) }
   },
-  setNextRepetition: async (userId, assessmentId, time) => {
+  setNextRepetition: async (userId, assessmentId, nextRepetition, now) => {
     const statement = `
       MATCH (user:User {id: {userId}})
       MATCH (item:Item) <-[:ASSESSMENT_FOR]- (assessment:Assessment {id: {assessmentId}})
       MERGE (user) -[learns:LEARNS]-> (item)
-      SET   learns.nextRepetition = {time}`
+      SET   learns.nextRepetition = {nextRepetition}
+      MERGE (user) -[tried:TRIED]-> (assessment)
+      SET   tried.last = {now}`
     await cypher.send(statement, {
       userId,
       assessmentId,
-      time: neo4j.int(time)
+      nextRepetition: neo4j.int(nextRepetition),
+      now: neo4j.int(now)
     })
   }
 })
