@@ -16,7 +16,7 @@ import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
-describe('Multi-assessment scenario', () => {
+describe('Preqs and multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
