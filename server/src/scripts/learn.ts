@@ -1,7 +1,3 @@
-import { createProductionCore } from '../adapters/production/createProductionCore'
-
-export const learn = async () => {
-  const core = createProductionCore()
-
-
+export const learn = async core => {
+  // console.log('start learning')
 }

@@ -1,11 +1,25 @@
+import { getTime } from 'date-fns'
+
+import { createCore } from '../core/Core'
+import { createCoreGateway } from '../core/CoreGateway'
 import { cleanupDb } from './cleanupDb'
 import { learn } from './learn'
 import { populateDb } from './populateDb'
 
 const start = async () => {
   await cleanupDb()
-  await populateDb()
-  await learn()
+
+  const gateway = createCoreGateway()
+  const dependencies = {
+    gateway,
+    timeProvider: { now: () => getTime(new Date()) },
+    repetitionScheduler: { next: () => Promise.resolve(1) }
+  } as any
+  const core = createCore(dependencies)
+
+  await populateDb(core)
+
+  await learn(core)
 }
 
 start().then(() => console.log('END'))
