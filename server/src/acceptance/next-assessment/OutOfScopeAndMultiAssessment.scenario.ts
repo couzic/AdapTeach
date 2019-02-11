@@ -20,7 +20,7 @@ import {
 import { createItemFactory, ItemFactory } from '../util/ItemFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
-describe('Out of scope scenario', () => {
+describe('Out of scope and multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
@@ -80,39 +80,6 @@ describe('Out of scope scenario', () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(inScopeAssessment)
-      })
-    })
-  })
-  describe(`
-     (inScopeAssessment) --> (inScopeItem) <-- (partiallyInScopeAssessment) --> (inDeepScopeItem)
-    `, () => {
-    let inScopeItem: Item
-    let inScopeAssessment: AssessmentId
-    let inDeepScopeItem: Item
-    let inDeepScopeAssessment: AssessmentId
-    beforeEach(async () => {
-      inScopeItem = await createItem('inScope')
-      await core.execute(AddComponent(composite.id, inScopeItem.id))
-      inDeepScopeItem = await createItem('inDeepScope')
-      const hiddenComposite = await createComposite('hidden', [
-        inDeepScopeItem.id
-      ])
-      await core.execute(AddComponent(composite.id, hiddenComposite.id))
-      inScopeAssessment = await mcqFactory('inScope', [inScopeItem.id])
-      inDeepScopeAssessment = await mcqFactory('inDeepScope', [
-        inScopeItem.id,
-        inDeepScopeItem.id
-      ])
-    })
-    describe(`when "in scope" assessment passed, and it's time to repeat`, () => {
-      beforeEach(async () => {
-        await core.execute(CheckAnswer(user.id, inScopeAssessment, 0))
-        dependencies.timeProvider.now = () => 2
-      })
-      it('has "in deep scope" next assessment', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
-        expect(next).not.to.be.null
-        expect(next!.id).to.equal(inDeepScopeAssessment)
       })
     })
   })

@@ -66,19 +66,23 @@ const baseQuery = `
     MATCH (assessment) -[:ASSESSMENT_FOR]-> (outOfScopeTarget: Item)
     WHERE NOT (user) -[:HAS_OBJECTIVE]-> (:Composite) -[:COMPOSED_OF*]-> (outOfScopeTarget)
   OPTIONAL
-	  MATCH (user) -[tried:TRIED]-> (assessment)
+    MATCH (user) -[tried:TRIED]-> (assessment)
+  OPTIONAL
+    MATCH (assessment) -[:ASSESSMENT_FOR]-> (target:Item)
   WITH
     assessment,
     COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs,
     COUNT(outOfScopeTarget) as outOfScopeTargets,
-    exists((user) -[:TRIED]-> (assessment)) as hasBeenTried, tried.last as triedLast
+    exists((user) -[:TRIED]-> (assessment)) as hasBeenTried, tried.skipped as skipped,
+    COUNT(target) as targets
   WITH
     assessment,
     MIN(preqs) as minPreqs,
     outOfScopeTargets,
-    hasBeenTried, triedLast
+    hasBeenTried, skipped,
+    targets
   RETURN assessment
-  ORDER BY minPreqs, outOfScopeTargets, hasBeenTried, triedLast
+  ORDER BY minPreqs, outOfScopeTargets, hasBeenTried, skipped DESC, targets
   LIMIT 1`
 
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
