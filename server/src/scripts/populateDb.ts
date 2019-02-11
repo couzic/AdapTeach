@@ -205,7 +205,20 @@ What value will be printed in the console ?`
   )
   await core.execute(AddLearningObjective(userId, rxjsBasics))
 
-  const nextAssessment = await core.execute(GetNextAssessment(userId))
-  console.log(nextAssessment)
+  console.log('Start learning')
+
+  let nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment!.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
+  nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment!.question)
+  await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
+  nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment!.question)
+  await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
+  nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment!.question)
+  await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
+  nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment && nextAssessment.question)
 }
