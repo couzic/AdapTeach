@@ -19,7 +19,7 @@ import {
 import { createItemFactory, ItemFactory } from '../util/ItemFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
-describe('Multi-target scenario', () => {
+describe('Multi-target multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
@@ -49,53 +49,38 @@ describe('Multi-target scenario', () => {
     await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-     (singleTargetAssessment) --> (item) <-- (multiTargetAssessment) --> (anotherItem)
+     /         \\  <----- (firstAssessment)         
+    | firstItem |
+     \\         /  <-- (multiTargetAssessment) --> (2 other items)
     `, () => {
-    let item: Item
-    let anotherItem: Item
-    let singleTargetAssessment: AssessmentId
+    let firstItem: Item
+    let secondItem: Item
+    let thirdItem: Item
+    let firstAssessment: AssessmentId
     let multiTargetAssessment: AssessmentId
     beforeEach(async () => {
-      item = await createItem('item')
-      anotherItem = await createItem('anotherItem')
-      await core.execute(AddComponent(userObjective.id, item.id))
-      await core.execute(AddComponent(userObjective.id, anotherItem.id))
-      singleTargetAssessment = await createMcq('singleTarget', [item.id])
-      multiTargetAssessment = await createMcq('multiTarget', [
-        item.id,
-        anotherItem.id
+      firstItem = await createItem('first')
+      secondItem = await createItem('second')
+      thirdItem = await createItem('third')
+      await core.execute(AddComponent(userObjective.id, firstItem.id))
+      await core.execute(AddComponent(userObjective.id, secondItem.id))
+      await core.execute(AddComponent(userObjective.id, thirdItem.id))
+      firstAssessment = await createMcq('first', [firstItem.id])
+      multiTargetAssessment = await createMcq('multi-target', [
+        firstItem.id,
+        secondItem.id,
+        thirdItem.id
       ])
     })
-    it('has single-target next assessment', async () => {
-      const next = await core.execute(GetNextAssessment(user.id))
-      expect(next).not.to.be.null
-      expect(next!.id).to.equal(singleTargetAssessment)
-    })
-    describe(`when single-target assessment passed twice, and it's time to repeat`, () => {
+    describe(`when first single-target assessment is passed and it's time to repeat`, () => {
       beforeEach(async () => {
-        await core.execute(CheckAnswer(user.id, singleTargetAssessment, 0))
+        await core.execute(CheckAnswer(user.id, firstAssessment, 0))
         dependencies.timeProvider.now = () => 2
-
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
-        await core.execute(CheckAnswer(user.id, singleTargetAssessment, 0))
-        dependencies.timeProvider.now = () => 4
       })
-      it('has multi-target next assessment', async () => {
+      it('still has first assessment as next', async () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
-        expect(next!.id).to.equal(multiTargetAssessment)
-      })
-      describe(`when multi-target assessment also passed, and it's time to repeat`, () => {
-        beforeEach(async () => {
-          dependencies.repetitionScheduler.next = () => Promise.resolve(3)
-          await core.execute(CheckAnswer(user.id, multiTargetAssessment, 0))
-          dependencies.timeProvider.now = () => 4
-        })
-        it('has single-target next assessment', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
-          expect(next).not.to.be.null
-          expect(next!.id).to.equal(singleTargetAssessment)
-        })
+        expect(next!.id).to.equal(firstAssessment)
       })
     })
   })

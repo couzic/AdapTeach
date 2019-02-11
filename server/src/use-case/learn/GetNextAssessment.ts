@@ -47,6 +47,9 @@ const newItemMatchClause = `
 
 const baseQuery = `
   OPTIONAL
+    MATCH (assessment) -[:ASSESSMENT_FOR]-> (outOfScopeTarget: Item)
+    WHERE NOT (user) -[:HAS_OBJECTIVE]-> (:Composite) -[:COMPOSED_OF*]-> (outOfScopeTarget)
+  OPTIONAL
     MATCH (newPreq:Item)
     WHERE NOT (user) -[:LEARNS]-> (newPreq)
     AND (
@@ -63,26 +66,23 @@ const baseQuery = `
       (assessment) -[:HAS_PREREQUISITE]-> (:Composite) -[:COMPOSED_OF*]-> (learnedPreq:Item)
     )
   OPTIONAL
-    MATCH (assessment) -[:ASSESSMENT_FOR]-> (outOfScopeTarget: Item)
-    WHERE NOT (user) -[:HAS_OBJECTIVE]-> (:Composite) -[:COMPOSED_OF*]-> (outOfScopeTarget)
-  OPTIONAL
     MATCH (user) -[tried:TRIED]-> (assessment)
   OPTIONAL
     MATCH (assessment) -[:ASSESSMENT_FOR]-> (target:Item)
   WITH
     assessment,
-    COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs,
     COUNT(outOfScopeTarget) as outOfScopeTargets,
-    exists((user) -[:TRIED]-> (assessment)) as hasBeenTried, tried.skipped as skipped,
+    COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs,
+    tried.skipped as skipped,
     COUNT(target) as targets
   WITH
     assessment,
-    preqs,
     outOfScopeTargets,
-    hasBeenTried, skipped,
+    preqs,
+    skipped - targets as priority,
     targets
   RETURN assessment
-  ORDER BY outOfScopeTargets, preqs, hasBeenTried, skipped DESC, targets
+  ORDER BY outOfScopeTargets, preqs, priority DESC, targets
   LIMIT 1`
 
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({

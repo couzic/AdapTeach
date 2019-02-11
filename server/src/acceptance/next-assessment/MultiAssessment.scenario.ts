@@ -110,8 +110,12 @@ describe('Multi-assessment scenario', () => {
       const hiddenComposite = await createComposite('hidden', [distantItem.id])
       await core.execute(AddComponent(userObjective.id, hiddenComposite.id))
     })
-    describe(`when assessment passed, and it's time to repeat`, () => {
+    describe(`when assessment passed twice, and it's time to repeat`, () => {
       beforeEach(async () => {
+        await core.execute(CheckAnswer(user.id, assessment, 0))
+        dependencies.timeProvider.now = () => 2
+
+        dependencies
         await core.execute(CheckAnswer(user.id, assessment, 0))
         dependencies.timeProvider.now = () => 2
       })

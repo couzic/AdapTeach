@@ -1,8 +1,8 @@
-import { cypher } from '../../neo4j/cypher'
 import { CoreDependencies } from '../../core/Core'
 import { Assessment, AssessmentId } from '../../domain/Assessment'
 import { McqId } from '../../domain/Mcq'
 import { UserId } from '../../domain/User'
+import { cypher } from '../../neo4j/cypher'
 
 export interface CheckAnswerGateway {
   getAssessment: (assessmentId: AssessmentId) => Promise<Assessment>
@@ -52,7 +52,9 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
       MATCH (assessment:Assessment {id: {assessmentId}})
       MATCH (item:Item) <-[:ASSESSMENT_FOR]- (assessment)
       OPTIONAL
-        MATCH (user) -[triedOther:TRIED]-> (:Assessment) -[:ASSESSMENT_FOR]-> (item)
+        MATCH (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (item)
+        MERGE (user) -[triedOther:TRIED]-> (otherAssessment)
+        ON CREATE SET triedOther.skipped = 0
         SET triedOther.skipped = triedOther.skipped + 1
       MERGE (user) -[learns:LEARNS]-> (item)
         SET learns.nextRepetition = {nextRepetition}
