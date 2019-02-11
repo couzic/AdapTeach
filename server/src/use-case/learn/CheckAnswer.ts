@@ -57,7 +57,7 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
       MERGE (user) -[learns:LEARNS]-> (item)
         SET learns.nextRepetition = {nextRepetition}
       MERGE (user) -[tried:TRIED]-> (assessment)
-       SET tried.skipped = 0
+        SET tried.skipped = 0
       `
     await cypher.send(statement, {
       userId,

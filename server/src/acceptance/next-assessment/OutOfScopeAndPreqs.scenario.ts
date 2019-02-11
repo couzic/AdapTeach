@@ -25,7 +25,7 @@ describe('Preqs and Out of scope scenario', () => {
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let composite: Composite
+  let userObjective: Composite
   let createItem: ItemFactory
   let createComposite: CompositeFactory
   let mcqFactory: McqFactory
@@ -46,33 +46,35 @@ describe('Preqs and Out of scope scenario', () => {
         email: 'email'
       } as any)
     )
-    composite = await core.execute(CreateComposite({ name: 'composite' }))
-    await core.execute(AddLearningObjective(user.id, composite.id))
+    userObjective = await core.execute(
+      CreateComposite({ name: 'User objective' })
+    )
+    await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-     (inScopeAssessment) --> (inScopeItem) <-- (partiallyInScopeAssessment) --> (outOfScopeItem)
+     (preq) <-[:HAS_PREQ]- (inScopeAssessment) --> (inScopeItem) <-- (partiallyInScopeAssessment) --> (outOfScopeItem)
     `, () => {
+    let preq: Item
     let inScopeItem: Item
     let outOfScopeItem: Item
     let inScopeAssessment: AssessmentId
     let partiallyInScopeAssessment: AssessmentId
-    let preq: Item
     beforeEach(async () => {
+      preq = await createItem('preq')
       inScopeItem = await createItem('inScope')
       outOfScopeItem = await createItem('outOfScope')
-      await core.execute(AddComponent(composite.id, inScopeItem.id))
+      await core.execute(AddComponent(userObjective.id, inScopeItem.id))
       inScopeAssessment = await mcqFactory('inScope', [inScopeItem.id])
       partiallyInScopeAssessment = await mcqFactory('partiallyInScope', [
         inScopeItem.id,
         outOfScopeItem.id
       ])
-      preq = await createItem('preq')
       await core.execute(AddPrerequisite(inScopeAssessment, preq.id))
     })
-    it('has "partially in scope" next assessment', async () => {
+    it('has "in scope" next assessment', async () => {
       const next = await core.execute(GetNextAssessment(user.id))
       expect(next).not.to.be.null
-      expect(next!.id).to.equal(partiallyInScopeAssessment)
+      expect(next!.id).to.equal(inScopeAssessment)
     })
   })
 })

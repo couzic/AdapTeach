@@ -77,12 +77,12 @@ const baseQuery = `
     COUNT(target) as targets
   WITH
     assessment,
-    MIN(preqs) as minPreqs,
+    preqs,
     outOfScopeTargets,
     hasBeenTried, skipped,
     targets
   RETURN assessment
-  ORDER BY minPreqs, outOfScopeTargets, hasBeenTried, skipped DESC, targets
+  ORDER BY outOfScopeTargets, preqs, hasBeenTried, skipped DESC, targets
   LIMIT 1`
 
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
