@@ -47,7 +47,9 @@ describe('Multi-assessment scenario', () => {
         email: 'email'
       } as any)
     )
-    userObjective = await core.execute(CreateComposite({ name: 'userObjective' }))
+    userObjective = await core.execute(
+      CreateComposite({ name: 'userObjective' })
+    )
     await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe('given item with two assessments', () => {
@@ -70,6 +72,18 @@ describe('Multi-assessment scenario', () => {
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
       })
+      describe("when first assessment fails and it's time to repeat", () => {
+        beforeEach(async () => {
+          dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+          await core.execute(CheckAnswer(user.id, firstAssessment, 1))
+          dependencies.timeProvider.now = () => 4
+        })
+        it('has second assessment as next', async () => {
+          const next = await core.execute(GetNextAssessment(user.id))
+          expect(next).not.to.be.null
+          expect(next!.id).to.equal(secondAssessment)
+        })
+      })
     })
     describe("when second, then first, then second assessment passed and it's time to repeat", () => {
       beforeEach(async () => {
@@ -83,6 +97,22 @@ describe('Multi-assessment scenario', () => {
         dependencies.timeProvider.now = () => 6
       })
       it('has first assessment as next', async () => {
+        const next = await core.execute(GetNextAssessment(user.id))
+        expect(next).not.to.be.null
+        expect(next!.id).to.equal(firstAssessment)
+      })
+    })
+    describe("when second assessment passes twice, then first assessment fails, and it's time to repeat", () => {
+      beforeEach(async () => {
+        await core.execute(CheckAnswer(user.id, secondAssessment, 0))
+        dependencies.timeProvider.now = () => 2
+        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+        await core.execute(CheckAnswer(user.id, secondAssessment, 0))
+        dependencies.timeProvider.now = () => 4
+        dependencies.repetitionScheduler.next = () => Promise.resolve(5)
+        await core.execute(CheckAnswer(user.id, firstAssessment, 1))
+      })
+      it('still has first assessment as next', async () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
