@@ -84,4 +84,114 @@ describe('Multi-target multi-assessment scenario', () => {
       })
     })
   })
+  describe(`
+  /         \\  <-- (firstAssessment)         
+ | firstItem |  <-- (secondAssessment)
+  \\         /  <-- (thirdAssessment) ---> (secondItem)
+    given first assessment passed
+      when third assessment is created and it's time to repeat
+ `, () => {
+    let firstItem: Item
+    let secondItem: Item
+    let firstAssessment: AssessmentId
+    let secondAssessment: AssessmentId
+    let thirdAssessment: AssessmentId
+    beforeEach(async () => {
+      firstItem = await createItem('first')
+      secondItem = await createItem('second')
+      await core.execute(AddComponent(userObjective.id, firstItem.id))
+      await core.execute(AddComponent(userObjective.id, secondItem.id))
+      firstAssessment = await createMcq('first', [firstItem.id])
+      secondAssessment = await createMcq('second', [firstItem.id])
+      await core.execute(CheckAnswer(user.id, firstAssessment, 0))
+      thirdAssessment = await createMcq('third', [firstItem.id, secondItem.id])
+      dependencies.timeProvider.now = () => 2
+    })
+    it('has second assessment as next', async () => {
+      const next = await core.execute(GetNextAssessment(user.id))
+      expect(next).not.to.be.null
+      expect(next!.id).to.equal(secondAssessment)
+    })
+  })
+  describe(`
+  /         \\  <-- (firstAssessment)         
+ | firstItem |  <-- (secondAssessment) --> (secondItem)
+  \\         /  <-- (thirdAssessment) ---> (second & third items)
+                <-- (fourthAssessment) ---> (second, third & fourth items)
+ `, () => {
+    let firstItem: Item
+    let secondItem: Item
+    let thirdItem: Item
+    let fourthItem: Item
+    let firstAssessment: AssessmentId
+    let secondAssessment: AssessmentId
+    let thirdAssessment: AssessmentId
+    let fourthAssessment: AssessmentId
+    beforeEach(async () => {
+      firstItem = await createItem('first')
+      secondItem = await createItem('second')
+      thirdItem = await createItem('third')
+      fourthItem = await createItem('fourth')
+      await core.execute(AddComponent(userObjective.id, firstItem.id))
+      await core.execute(AddComponent(userObjective.id, secondItem.id))
+      await core.execute(AddComponent(userObjective.id, thirdItem.id))
+      await core.execute(AddComponent(userObjective.id, fourthItem.id))
+      firstAssessment = await createMcq('first', [firstItem.id])
+      secondAssessment = await createMcq('second', [
+        firstItem.id,
+        secondItem.id
+      ])
+      thirdAssessment = await createMcq('third', [
+        firstItem.id,
+        secondItem.id,
+        thirdItem.id
+      ])
+      fourthAssessment = await createMcq('fourth', [
+        firstItem.id,
+        secondItem.id,
+        thirdItem.id,
+        fourthItem.id
+      ])
+    })
+    describe('when first, second and third assessments passed', () => {
+      beforeEach(async () => {
+        await core.execute(CheckAnswer(user.id, firstAssessment, 0))
+        await core.execute(CheckAnswer(user.id, secondAssessment, 0))
+        await core.execute(CheckAnswer(user.id, thirdAssessment, 0))
+      })
+      describe(`when a new single-target assessment is created`, () => {
+        let newSingleTargetAssessment: AssessmentId
+        beforeEach(async () => {
+          newSingleTargetAssessment = await createMcq('new single-target', [
+            fourthItem.id
+          ])
+        })
+        it('has new single-target assessment as next', async () => {
+          const next = await core.execute(GetNextAssessment(user.id))
+          expect(next).not.to.be.null
+          expect(next!.id).to.equal(newSingleTargetAssessment)
+        })
+      })
+    })
+    describe('when first and second assessments failed, then third assessment passed', () => {
+      beforeEach(async () => {
+        await core.execute(CheckAnswer(user.id, firstAssessment, 1))
+        await core.execute(CheckAnswer(user.id, secondAssessment, 1))
+        await core.execute(CheckAnswer(user.id, thirdAssessment, 0))
+      })
+      describe(`when a new single-target assessment is created`, () => {
+        let newSingleTargetAssessment: AssessmentId
+        beforeEach(async () => {
+          newSingleTargetAssessment = await createMcq('new single-target', [
+            fourthItem.id
+          ])
+        })
+        it('has new single-target assessment as next', async () => {
+          const next = await core.execute(GetNextAssessment(user.id))
+          expect(next).not.to.be.null
+          expect(next!.id).to.equal(newSingleTargetAssessment)
+        })
+      })
+    })
+  })
 })

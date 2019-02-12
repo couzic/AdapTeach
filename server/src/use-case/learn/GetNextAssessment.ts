@@ -73,7 +73,7 @@ const baseQuery = `
     assessment,
     COUNT(outOfScopeTarget) as outOfScopeTargets,
     COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs,
-    tried.skipped as skipped,
+    COALESCE(tried.skipped, 0) as skipped,
     COUNT(target) as targets
   WITH
     assessment,
