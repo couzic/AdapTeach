@@ -14,7 +14,7 @@ const start = async () => {
     gateway,
     timeProvider: { now: () => getTime(new Date()) },
     repetitionScheduler: {
-      next: () => Promise.resolve(dependencies.timeProvider.now() + 1000)
+      next: () => Promise.resolve(dependencies.timeProvider.now() + 1000 * 1000)
     }
   } as any
   const core = createCore(dependencies)

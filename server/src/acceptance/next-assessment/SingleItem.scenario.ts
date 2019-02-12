@@ -2,24 +2,24 @@ import { expect } from 'chai'
 
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
+import { AssessmentId } from '../../domain/Assessment'
 import { Composite } from '../../domain/Composite'
 import { Item } from '../../domain/Item'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
+import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment'
+import { AddAssessedItem } from '../../use-case/contribute/assessment/AddAssessedItem'
+import { CreateAssessment } from '../../use-case/contribute/assessment/CreateAssessment'
+import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers'
+import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion'
+import { AddComponent } from '../../use-case/contribute/composite/AddComponent'
 import { CreateComposite } from '../../use-case/contribute/composite/CreateComposite'
 import { CreateItem } from '../../use-case/contribute/item/CreateItem'
+import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
+import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
+import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
-import { AddComponent } from '../../use-case/contribute/composite/AddComponent';
-import { AssessmentId } from '../../domain/Assessment';
-import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective';
-import { CreateAssessment } from '../../use-case/contribute/assessment/CreateAssessment';
-import { AddAssessedItem } from '../../use-case/contribute/assessment/AddAssessedItem';
-import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion';
-import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers';
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment';
-import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment';
-import { CheckAnswer } from '../../use-case/learn/CheckAnswer';
 
 describe('Single Item', () => {
   const gateway = createCoreGateway()
@@ -98,6 +98,16 @@ describe('Single Item', () => {
             expect(next).not.to.be.null
             expect(next!.id).to.equal(assessmentId)
           })
+        })
+      })
+      describe('when assessment fails', () => {
+        beforeEach(async () => {
+          await core.execute(CheckAnswer(user.id, assessmentId, 1))
+        })
+        it('has next assessment', async () => {
+          const next = await core.execute(GetNextAssessment(user.id))
+          expect(next).not.to.be.null
+          expect(next!.id).to.equal(assessmentId)
         })
       })
     })

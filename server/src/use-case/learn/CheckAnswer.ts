@@ -88,12 +88,13 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
     const statement = `
       MATCH (user:User {id: {userId}})
       MATCH (assessment:Assessment {id: {assessmentId}}) -[:ASSESSMENT_FOR]-> (item:Item)
+      MERGE (user) -[tried:TRIED]-> (:Assessment)
+        ON CREATE SET tried.skipped = 0
+      WITH user, assessment, item
       OPTIONAL
-        MATCH (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (item)
+        MATCH (user) -[triedOther:TRIED]-> (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (item)
         WHERE otherAssessment <> assessment
-        MERGE (user) -[triedOther:TRIED]-> (otherAssessment)
-        ON CREATE SET triedOther.skipped = 0
-      WITH triedOther, triedOther.skipped as skipped
+        WITH triedOther, triedOther.skipped as skipped
         SET triedOther.skipped = skipped + 1
       `
     await cypher.send(statement, {

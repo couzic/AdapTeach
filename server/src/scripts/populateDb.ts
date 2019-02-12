@@ -221,4 +221,7 @@ What value will be printed in the console ?`
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
   nextAssessment = await core.execute(GetNextAssessment(userId))
   console.log(nextAssessment && nextAssessment.question)
+  await core.execute(CheckAnswer(userId, nextAssessment!.id, 1))
+  nextAssessment = await core.execute(GetNextAssessment(userId))
+  console.log(nextAssessment && nextAssessment.question)
 }
