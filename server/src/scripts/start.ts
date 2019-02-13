@@ -1,5 +1,5 @@
-import { getTime } from 'date-fns'
-
+import { createSimpleRepetitionScheduler } from '../core/adapters/SimpleRepetitionScheduler'
+import { createRealTimeProvider } from '../core/adapters/RealTimeProvider'
 import { createCore } from '../core/Core'
 import { createCoreGateway } from '../core/CoreGateway'
 import { cleanupDb } from './cleanupDb'
@@ -10,14 +10,13 @@ const start = async () => {
   await cleanupDb()
 
   const gateway = createCoreGateway()
-  const dependencies = {
+  const timeProvider = createRealTimeProvider()
+  const repetitionScheduler = createSimpleRepetitionScheduler(timeProvider)
+  const core = createCore({
     gateway,
-    timeProvider: { now: () => getTime(new Date()) },
-    repetitionScheduler: {
-      next: () => Promise.resolve(dependencies.timeProvider.now() + 1000 * 1000)
-    }
-  } as any
-  const core = createCore(dependencies)
+    timeProvider,
+    repetitionScheduler
+  })
 
   await populateDb(core)
 

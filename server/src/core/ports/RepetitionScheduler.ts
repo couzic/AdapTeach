@@ -1,3 +1,6 @@
 export interface RepetitionScheduler {
-  next: () => Promise<number>
+  next: (params?: {
+    passed: boolean
+    history: Array<{ passed: boolean; time: number }>
+  }) => Promise<number>
 }
