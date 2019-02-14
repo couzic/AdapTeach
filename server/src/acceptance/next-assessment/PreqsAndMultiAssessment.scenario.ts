@@ -3,13 +3,13 @@ import { expect } from 'chai'
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
-import { Composite } from '../../domain/Composite'
-import { Item } from '../../domain/Item'
+import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
+import { LearningObjective } from '../../domain/LearningObjective'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
-import { AddComponent } from '../../use-case/contribute/composite/AddComponent'
-import { CreateComposite } from '../../use-case/contribute/composite/CreateComposite'
-import { CreateItem } from '../../use-case/contribute/item/CreateItem'
+import { CreateKnowledgeComponent } from '../../use-case/contribute/component/CreateKnowledgeComponent'
+import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
+import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
@@ -22,7 +22,7 @@ describe('Preqs and multi-assessment scenario', () => {
   let core: Core
   let createAssessment: McqFactory
   let user: User
-  let objective: Composite
+  let objective: LearningObjective
   beforeEach(async () => {
     await cypher.clearDb()
     dependencies = {
@@ -35,19 +35,23 @@ describe('Preqs and multi-assessment scenario', () => {
     user = await core.execute(
       CreateUser({ username: 'user', email: 'email' } as any)
     )
-    objective = await core.execute(CreateComposite({ name: 'objective' }))
+    objective = await core.execute(
+      CreateLearningObjective({ name: 'objective' })
+    )
     await core.execute(AddLearningObjective(user.id, objective.id))
   })
-  describe('given item with two assessments (hard one has prerequisite)', () => {
-    let item: Item
+  describe('given kc with two assessments (hard one has prerequisite)', () => {
+    let kc: KnowledgeComponent
     let easyAssessment: AssessmentId
     let hardAssessment: AssessmentId
     beforeEach(async () => {
-      item = await core.execute(CreateItem({ name: 'item' }))
-      await core.execute(AddComponent(objective.id, item.id))
-      easyAssessment = await createAssessment('first', [item.id])
-      const preq = await core.execute(CreateItem({ name: 'preq' }))
-      hardAssessment = await createAssessment('second', [item.id], {
+      kc = await core.execute(CreateKnowledgeComponent({ name: 'kc' }))
+      await core.execute(AddToObjective(objective.id, kc.id))
+      easyAssessment = await createAssessment('first', [kc.id])
+      const preq = await core.execute(
+        CreateKnowledgeComponent({ name: 'preq' })
+      )
+      hardAssessment = await createAssessment('second', [kc.id], {
         prerequisites: [preq.id]
       })
     })

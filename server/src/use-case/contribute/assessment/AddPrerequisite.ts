@@ -1,27 +1,29 @@
 import { UseCaseDependencies } from '../../../core/Core'
 import { Assessment, AssessmentId } from '../../../domain/Assessment'
-import { ObjectiveId } from '../../../domain/Objective'
+import { KnowledgeCompositeId } from '../../../domain/KnowledgeComposite'
 import { cypher } from '../../../neo4j/cypher'
+import { NodeType } from '../../../neo4j/NodeType';
+import { RelType } from '../../../neo4j/RelType';
 
 export interface AddPrerequisiteGateway {
   addPrerequisite: (
     assessmentId: AssessmentId,
-    prerequisiteId: ObjectiveId
+    prerequisiteId: KnowledgeCompositeId
   ) => Promise<Assessment>
 }
 
 export const AddPrerequisite = (
   assesmentId: AssessmentId,
-  prerequisiteId: ObjectiveId
+  prerequisiteId: KnowledgeCompositeId
 ) => ({ gateway }: UseCaseDependencies) =>
   gateway.addPrerequisite(assesmentId, prerequisiteId)
 
 export const createAddPrerequisiteGateway = (): AddPrerequisiteGateway => ({
   addPrerequisite: async (assessmentId, preqId) => {
     const statement = `
-        MATCH (assessment:Assessment {id: {assessmentId}})
-        MATCH (preq:Objective {id: {preqId}})
-        CREATE (assessment) -[:HAS_PREREQUISITE]-> (preq)
+        MATCH (assessment:${NodeType.Assessment} {id: {assessmentId}})
+        MATCH (preq:${NodeType.KnowledgeComposite} {id: {preqId}})
+        CREATE (assessment) -[:${RelType.HAS_PREREQUISITE}]-> (preq)
         RETURN assessment`
     const records = await cypher.send(statement, {
       assessmentId,

@@ -1,58 +1,58 @@
-import { createCompositeFactory } from '../acceptance/util/CompositeFactory'
-import { createItemFactory } from '../acceptance/util/ItemFactory'
 import { createMcqFactory } from '../acceptance/util/McqFactory'
 import { Core } from '../core/Core'
 import { ActivateAssessment } from '../use-case/contribute/assessment/ActivateAssessment'
-import { AddAssessedItem } from '../use-case/contribute/assessment/AddAssessedItem'
+import { AddAssessedComponent } from '../use-case/contribute/assessment/AddAssessedComponent'
 import { CreateAssessment } from '../use-case/contribute/assessment/CreateAssessment'
 import { SetAnswers } from '../use-case/contribute/assessment/SetAnswers'
 import { SetQuestion } from '../use-case/contribute/assessment/SetQuestion'
-import { CreateItem } from '../use-case/contribute/item/CreateItem'
 import { AddLearningObjective } from '../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../use-case/user/CreateUser'
+import { CreateKnowledgeComponent } from '../use-case/contribute/component/CreateKnowledgeComponent';
+import { createKcFactory } from '../acceptance/util/KcFactory';
+import { createObjectiveFactory } from '../acceptance/util/ObjectiveFactory';
 
 export const populateDb = async (core: Core) => {
   console.log('Start populating DB')
 
-  const createItem = createItemFactory(core)
-  const createComposite = createCompositeFactory(core)
+  const createItem = createKcFactory(core)
+  const createComposite = createObjectiveFactory(core)
   const createMcq = createMcqFactory(core)
 
   ///////////
   // ITEM //
   /////////
   const { id: subscribe } = await core.execute(
-    CreateItem({
+    CreateKnowledgeComponent({
       name: 'Observable.subscribe() - Simple form',
       description:
         'A function passed to Observable.subscribe() will be called every time a value is emitted by that Observable'
     })
   )
   const { id: ofSingleValue } = await core.execute(
-    CreateItem({
+    CreateKnowledgeComponent({
       name: 'of(singleValue)',
       description:
         'Create an Observable that emits a single value by calling of() with a single argument'
     })
   )
   const { id: ofMultipleValues } = await core.execute(
-    CreateItem({
+    CreateKnowledgeComponent({
       name: 'of(multipleValues)',
       description:
         'Create an Observable that emits multiple values by calling of() with multiple arguments'
     })
   )
   const { id: ofArray } = await core.execute(
-    CreateItem({
+    CreateKnowledgeComponent({
       name: 'of(array)',
       description:
         'An array is considered a regular single value when passed to of(), just as in of(singleValue) - do not confuse with from(array)'
     })
   )
   const { id: fromArray } = await core.execute(
-    CreateItem({
+    CreateKnowledgeComponent({
       name: 'from(array)',
       description:
         'Each element in the array passed to from() will emit a separate event'
@@ -80,8 +80,8 @@ export const populateDb = async (core: Core) => {
       type: 'MCQ'
     })
   )
-  await core.execute(AddAssessedItem(ofStringAssessment, ofSingleValue))
-  await core.execute(AddAssessedItem(ofStringAssessment, subscribe))
+  await core.execute(AddAssessedComponent(ofStringAssessment, ofSingleValue))
+  await core.execute(AddAssessedComponent(ofStringAssessment, subscribe))
   await core.execute(
     SetQuestion(
       ofStringAssessment,
@@ -109,8 +109,8 @@ What value will be printed in the console ?`
       type: 'MCQ'
     })
   )
-  await core.execute(AddAssessedItem(ofMultipleValuesMcq, ofMultipleValues))
-  await core.execute(AddAssessedItem(ofMultipleValuesMcq, subscribe))
+  await core.execute(AddAssessedComponent(ofMultipleValuesMcq, ofMultipleValues))
+  await core.execute(AddAssessedComponent(ofMultipleValuesMcq, subscribe))
   await core.execute(
     SetQuestion(
       ofMultipleValuesMcq,
@@ -138,9 +138,9 @@ What value will be printed in the console ?`
       type: 'MCQ'
     })
   )
-  await core.execute(AddAssessedItem(ofArrayMcq, ofArray))
-  await core.execute(AddAssessedItem(ofArrayMcq, ofSingleValue))
-  await core.execute(AddAssessedItem(ofArrayMcq, subscribe))
+  await core.execute(AddAssessedComponent(ofArrayMcq, ofArray))
+  await core.execute(AddAssessedComponent(ofArrayMcq, ofSingleValue))
+  await core.execute(AddAssessedComponent(ofArrayMcq, subscribe))
   await core.execute(
     SetQuestion(
       ofArrayMcq,
@@ -168,8 +168,8 @@ What value will be printed in the console ?`
       type: 'MCQ'
     })
   )
-  await core.execute(AddAssessedItem(fromArrayMcq, fromArray))
-  await core.execute(AddAssessedItem(fromArrayMcq, subscribe))
+  await core.execute(AddAssessedComponent(fromArrayMcq, fromArray))
+  await core.execute(AddAssessedComponent(fromArrayMcq, subscribe))
   await core.execute(
     SetQuestion(
       fromArrayMcq,

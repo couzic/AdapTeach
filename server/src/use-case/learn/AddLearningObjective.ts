@@ -1,18 +1,20 @@
 import { CoreDependencies } from '../../core/Core'
-import { ObjectiveId } from '../../domain/Objective'
+import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
 import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
+import { NodeType } from '../../neo4j/NodeType'
+import { RelType } from '../../neo4j/RelType';
 
 export interface AddLearningObjectiveGateway {
   addLearningObjective: (
     userId: UserId,
-    objectiveId: ObjectiveId
+    objectiveId: KnowledgeCompositeId
   ) => Promise<void>
 }
 
 export const AddLearningObjective = (
   userId: UserId,
-  objectiveId: ObjectiveId
+  objectiveId: KnowledgeCompositeId
 ) => async ({ gateway }: CoreDependencies) => {
   await gateway.addLearningObjective(userId, objectiveId)
 }
@@ -20,9 +22,9 @@ export const AddLearningObjective = (
 export const createAddLearningObjectiveGateway = (): AddLearningObjectiveGateway => ({
   addLearningObjective: async (userId, objectiveId) => {
     const statement = `
-        MATCH (user:User {id: {userId}})
-        MATCH (objective:Objective {id: {objectiveId}})
-        CREATE (user) -[:HAS_OBJECTIVE]-> (objective)
+        MATCH (user:${NodeType.User} {id: {userId}})
+        MATCH (objective:${NodeType.LearningObjective} {id: {objectiveId}})
+        CREATE (user) -[:${RelType.HAS_OBJECTIVE}]-> (objective)
         RETURN user`
     await cypher.send(statement, { userId, objectiveId })
   }

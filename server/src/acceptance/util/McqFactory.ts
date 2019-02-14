@@ -1,8 +1,8 @@
 import { Core } from '../../core/Core'
-import { ItemId } from '../../domain/Item'
-import { ObjectiveId } from '../../domain/Objective'
+import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
+import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
 import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment'
-import { AddAssessedItem } from '../../use-case/contribute/assessment/AddAssessedItem'
+import { AddAssessedComponent } from '../../use-case/contribute/assessment/AddAssessedComponent'
 import { AddPrerequisite } from '../../use-case/contribute/assessment/AddPrerequisite'
 import { CreateAssessment } from '../../use-case/contribute/assessment/CreateAssessment'
 import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers'
@@ -10,16 +10,16 @@ import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion'
 
 export const createMcqFactory = (core: Core) => async (
   name: string,
-  items: ItemId[],
+  items: KnowledgeComponentId[],
   options?: {
-    prerequisites?: ObjectiveId[]
+    prerequisites?: KnowledgeCompositeId[]
   }
 ) => {
   const { id: assessmentId } = await core.execute(
     CreateAssessment({ type: 'MCQ' })
   )
   for (let i = 0, l = items.length; i < l; i++) {
-    await core.execute(AddAssessedItem(assessmentId, items[i]))
+    await core.execute(AddAssessedComponent(assessmentId, items[i]))
   }
   await core.execute(SetQuestion(assessmentId, name + ' question'))
   await core.execute(

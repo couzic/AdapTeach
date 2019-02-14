@@ -1,6 +1,7 @@
 import { cypher } from '../../neo4j/cypher'
 import { UseCaseDependencies } from '../../core/Core'
 import { User, UserFields, UserId } from '../../domain/User'
+import { NodeType } from '../../neo4j/NodeType'
 
 export interface CreateUserGateway {
   createUser: (user: User) => Promise<User>
@@ -18,7 +19,11 @@ export const CreateUser = (fields: UserFields) => async ({
 export const createCreateUserGateway = (): CreateUserGateway => ({
   createUser: async user => {
     const statement = `
-      CREATE (user:User {id: {id}, username: {username}, email: {email}})
+      CREATE (user:${NodeType.User} {
+        id: {id},
+        username: {username},
+        email: {email}
+      })
       RETURN user`
     const records = await cypher.send(statement, user)
     return records[0].get('user').properties

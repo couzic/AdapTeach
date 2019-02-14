@@ -3,6 +3,7 @@ import { Assessment, AssessmentId } from '../../domain/Assessment'
 import { McqId } from '../../domain/Mcq'
 import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
+import { NodeType } from '../../neo4j/NodeType'
 
 export interface CheckAnswerGateway {
   getAssessment: (assessmentId: AssessmentId) => Promise<Assessment>
@@ -56,7 +57,7 @@ const neo4j = require('neo4j-driver').v1
 export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
   getAssessment: async id => {
     const statement = `
-      MATCH (assessment:Assessment {id: {id}})
+      MATCH (assessment:${NodeType.Assessment} {id: {id}})
       RETURN assessment`
     const records = await cypher.send(statement, { id })
     const nodeProperties = records[0].get('assessment').properties
@@ -65,14 +66,14 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
   handlePass: async (userId, assessmentId, nextRepetition, now) => {
     const statement = `
       MATCH (user:User {id: {userId}})
-      MATCH (assessment:Assessment {id: {assessmentId}}) -[:ASSESSMENT_FOR]-> (item:Item)
+      MATCH (assessment:Assessment {id: {assessmentId}}) -[:ASSESSMENT_FOR]-> (target:KC)
       OPTIONAL
-        MATCH (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (item)
+        MATCH (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (target)
         MERGE (user) -[triedOther:TRIED]-> (otherAssessment)
         ON CREATE SET triedOther.skipped = 0
-      WITH user, assessment, item, triedOther, triedOther.skipped as skipped
+      WITH user, assessment, target, triedOther, triedOther.skipped as skipped
         SET triedOther.skipped = skipped + 1
-      MERGE (user) -[learns:LEARNS]-> (item)
+      MERGE (user) -[learns:LEARNS]-> (target)
         SET learns.nextRepetition = {nextRepetition}
       MERGE (user) -[tried:TRIED]-> (assessment)
         SET tried.skipped = 0
@@ -87,12 +88,12 @@ export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
   handleFail: async (userId, assessmentId, nextRepetition, now) => {
     const statement = `
       MATCH (user:User {id: {userId}})
-      MATCH (assessment:Assessment {id: {assessmentId}}) -[:ASSESSMENT_FOR]-> (item:Item)
+      MATCH (assessment:Assessment {id: {assessmentId}}) -[:ASSESSMENT_FOR]-> (target:KC)
       MERGE (user) -[tried:TRIED]-> (:Assessment)
         ON CREATE SET tried.skipped = 0
-      WITH user, assessment, item
+      WITH user, assessment, target
       OPTIONAL
-        MATCH (user) -[triedOther:TRIED]-> (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (item)
+        MATCH (user) -[triedOther:TRIED]-> (otherAssessment:Assessment) -[:ASSESSMENT_FOR]-> (target)
         WHERE otherAssessment <> assessment
         WITH triedOther, triedOther.skipped as skipped
         SET triedOther.skipped = skipped + 1

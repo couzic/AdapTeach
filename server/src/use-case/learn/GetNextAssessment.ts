@@ -4,11 +4,11 @@ import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 
 export interface GetNextAssessmentGateway {
-  nextAssessmentForScheduledItem: (
+  nextAssessmentForScheduledKc: (
     userId: UserId,
     now: number
   ) => Promise<Assessment | null>
-  nextAssessmentForNewItem: (
+  nextAssessmentForNewKc: (
     userId: UserId,
     now: number
   ) => Promise<Assessment | null>
@@ -18,57 +18,57 @@ export const GetNextAssessment = (userId: UserId) => async ({
   gateway,
   timeProvider
 }: UseCaseDependencies) => {
-  const nextAssessmentForScheduledItem = await gateway.nextAssessmentForScheduledItem(
+  const nextAssessmentForScheduledKc = await gateway.nextAssessmentForScheduledKc(
     userId,
     timeProvider.now()
   )
-  if (nextAssessmentForScheduledItem) {
-    return nextAssessmentForScheduledItem
+  if (nextAssessmentForScheduledKc) {
+    return nextAssessmentForScheduledKc
   }
-  const nextAssessmentForNewItem = await gateway.nextAssessmentForNewItem(
+  const nextAssessmentForNewKc = await gateway.nextAssessmentForNewKc(
     userId,
     timeProvider.now()
   )
-  if (nextAssessmentForNewItem) {
-    return nextAssessmentForNewItem
+  if (nextAssessmentForNewKc) {
+    return nextAssessmentForNewKc
   }
   return null
 }
 
 // TODO: Filter active assessments
-const scheduledItemMatchClause = `
-  MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (item:Item) <-[:ASSESSMENT_FOR]- (assessment:Assessment)
-  WHERE (user) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (item)
+const scheduledComponentMatchClause = `
+  MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (kc:KC) <-[:ASSESSMENT_FOR]- (assessment:Assessment)
+  WHERE (user) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (kc)
   AND   learns.nextRepetition < {now}`
 
-const newItemMatchClause = `
-  MATCH (user:User {id: {userId}}) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (item:Item) <-[:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
-  WHERE NOT (user) -[:LEARNS]-> (item)`
+const newComponentMatchClause = `
+  MATCH (user:User {id: {userId}}) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (kc:KC) <-[:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
+  WHERE NOT (user) -[:LEARNS]-> (kc)`
 
 const baseQuery = `
   OPTIONAL
-    MATCH (assessment) -[:ASSESSMENT_FOR]-> (outOfScopeTarget: Item)
-    WHERE NOT (user) -[:HAS_OBJECTIVE]-> (:Composite) -[:COMPOSED_OF*]-> (outOfScopeTarget)
+    MATCH (assessment) -[:ASSESSMENT_FOR]-> (outOfScopeTarget: KC)
+    WHERE NOT (user) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (outOfScopeTarget)
   OPTIONAL
-    MATCH (newPreq:Item)
+    MATCH (newPreq:KC)
     WHERE NOT (user) -[:LEARNS]-> (newPreq)
     AND (
       (assessment) -[:HAS_PREREQUISITE]-> (newPreq)
       OR
-      (assessment) -[:HAS_PREREQUISITE]-> (:Composite) -[:COMPOSED_OF*]-> (newPreq:Item)
-  )
+      (assessment) -[:HAS_PREREQUISITE]-> (:Objective) -[:COMPOSED_OF*]-> (newPreq)
+    )
   OPTIONAL
-    MATCH (learnedPreq:Item) <-[learns:LEARNS]- (user)
+    MATCH (learnedPreq:KC) <-[learns:LEARNS]- (user)
     WHERE learns.nextRepetition < {now}
     AND (
       (assessment) -[:HAS_PREREQUISITE]-> (learnedPreq)
       OR
-      (assessment) -[:HAS_PREREQUISITE]-> (:Composite) -[:COMPOSED_OF*]-> (learnedPreq:Item)
+      (assessment) -[:HAS_PREREQUISITE]-> (:Objective) -[:COMPOSED_OF*]-> (learnedPreq)
     )
   OPTIONAL
     MATCH (user) -[tried:TRIED]-> (assessment)
   OPTIONAL
-    MATCH (assessment) -[:ASSESSMENT_FOR]-> (target:Item)
+    MATCH (assessment) -[:ASSESSMENT_FOR]-> (target:KC)
   WITH
     assessment,
     COUNT(outOfScopeTarget) as outOfScopeTargets,
@@ -86,14 +86,14 @@ const baseQuery = `
   LIMIT 1`
 
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
-  nextAssessmentForScheduledItem: async (userId, now) => {
-    const statement = scheduledItemMatchClause + baseQuery
+  nextAssessmentForScheduledKc: async (userId, now) => {
+    const statement = scheduledComponentMatchClause + baseQuery
     const records = await cypher.send(statement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties
   },
-  nextAssessmentForNewItem: async (userId, now) => {
-    const statement = newItemMatchClause + baseQuery
+  nextAssessmentForNewKc: async (userId, now) => {
+    const statement = newComponentMatchClause + baseQuery
     const records = await cypher.send(statement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties

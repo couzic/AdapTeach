@@ -3,31 +3,30 @@ import { expect } from 'chai'
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
-import { Composite } from '../../domain/Composite'
-import { Item } from '../../domain/Item'
+import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
+import { LearningObjective } from '../../domain/LearningObjective'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
-import { AddComponent } from '../../use-case/contribute/composite/AddComponent'
-import { CreateComposite } from '../../use-case/contribute/composite/CreateComposite'
+import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
-import {
-  CompositeFactory,
-  createCompositeFactory
-} from '../util/CompositeFactory'
-import { createItemFactory, ItemFactory } from '../util/ItemFactory'
+import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
+import {
+  createObjectiveFactory,
+  ObjectiveFactory
+} from '../util/ObjectiveFactory'
 
 describe('Out of scope and multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let composite: Composite
-  let createItem: ItemFactory
-  let createComposite: CompositeFactory
+  let userObjective: LearningObjective
+  let createKc: KcFactory
+  let createObjective: ObjectiveFactory
   let mcqFactory: McqFactory
   beforeEach(async () => {
     await cypher.clearDb()
@@ -37,8 +36,8 @@ describe('Out of scope and multi-assessment scenario', () => {
       repetitionScheduler: { next: () => Promise.resolve(1) }
     } as any
     core = createCore(dependencies)
-    createItem = createItemFactory(core)
-    createComposite = createCompositeFactory(core)
+    createKc = createKcFactory(core)
+    createObjective = createObjectiveFactory(core)
     mcqFactory = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
@@ -46,24 +45,24 @@ describe('Out of scope and multi-assessment scenario', () => {
         email: 'email'
       } as any)
     )
-    composite = await core.execute(CreateComposite({ name: 'composite' }))
-    await core.execute(AddLearningObjective(user.id, composite.id))
+    userObjective = await createObjective('User Objective')
+    await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-     (inScopeAssessment) --> (inScopeItem) <-- (partiallyInScopeAssessment) --> (outOfScopeItem)
+     (inScopeAssessment) --> (inScopeKc) <-- (partiallyInScopeAssessment) --> (outOfScopeKc)
     `, () => {
-    let inScopeItem: Item
-    let outOfScopeItem: Item
+    let inScopeKc: KnowledgeComponent
+    let outOfScopeKc: KnowledgeComponent
     let inScopeAssessment: AssessmentId
     let partiallyInScopeAssessment: AssessmentId
     beforeEach(async () => {
-      inScopeItem = await createItem('inScope')
-      outOfScopeItem = await createItem('outOfScope')
-      await core.execute(AddComponent(composite.id, inScopeItem.id))
-      inScopeAssessment = await mcqFactory('inScope', [inScopeItem.id])
+      inScopeKc = await createKc('inScope')
+      outOfScopeKc = await createKc('outOfScope')
+      await core.execute(AddToObjective(userObjective.id, inScopeKc.id))
+      inScopeAssessment = await mcqFactory('inScope', [inScopeKc.id])
       partiallyInScopeAssessment = await mcqFactory('partiallyInScope', [
-        inScopeItem.id,
-        outOfScopeItem.id
+        inScopeKc.id,
+        outOfScopeKc.id
       ])
     })
     it('has "in scope" next assessment', async () => {

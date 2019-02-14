@@ -3,32 +3,30 @@ import { expect } from 'chai'
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
-import { Composite } from '../../domain/Composite'
-import { Item } from '../../domain/Item'
+import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
+import { LearningObjective } from '../../domain/LearningObjective'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
-import { AddComponent } from '../../use-case/contribute/composite/AddComponent'
-import { CreateComposite } from '../../use-case/contribute/composite/CreateComposite'
-import { CreateItem } from '../../use-case/contribute/item/CreateItem'
+import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
-import {
-  CompositeFactory,
-  createCompositeFactory
-} from '../util/CompositeFactory'
-import { createItemFactory, ItemFactory } from '../util/ItemFactory'
+import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
+import {
+  createObjectiveFactory,
+  ObjectiveFactory
+} from '../util/ObjectiveFactory'
 
 describe('Preqs scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let composite: Composite
-  let createItem: ItemFactory
-  let createComposite: CompositeFactory
+  let userObjective: LearningObjective
+  let createKc: KcFactory
+  let createObjective: ObjectiveFactory
   let mcqFactory: McqFactory
   beforeEach(async () => {
     await cypher.clearDb()
@@ -38,8 +36,8 @@ describe('Preqs scenario', () => {
       repetitionScheduler: { next: () => Promise.resolve(1) }
     } as any
     core = createCore(dependencies)
-    createItem = createItemFactory(core)
-    createComposite = createCompositeFactory(core)
+    createKc = createKcFactory(core)
+    createObjective = createObjectiveFactory(core)
     mcqFactory = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
@@ -47,33 +45,25 @@ describe('Preqs scenario', () => {
         email: 'email'
       } as any)
     )
-    composite = await core.execute(CreateComposite({ name: 'composite' }))
-    await core.execute(AddLearningObjective(user.id, composite.id))
+    userObjective = await createObjective('User Objective')
+    await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-    (easyItem) <--------- (easyAssessment)
-               <-[:PREQ]- (hardAssessment) --> (hardItem)
+    (easyKc) <--------- (easyAssessment)
+               <-[:PREQ]- (hardAssessment) --> (hardKc)
     `, () => {
-    let easyItem: Item
-    let hardItem: Item
+    let easyKc: KnowledgeComponent
+    let hardKc: KnowledgeComponent
     let easyAssessmentId: AssessmentId
     let hardAssessmentId: AssessmentId
     beforeEach(async () => {
-      hardItem = await core.execute(
-        CreateItem({
-          name: 'hard'
-        })
-      )
-      easyItem = await core.execute(
-        CreateItem({
-          name: 'easy'
-        })
-      )
-      await core.execute(AddComponent(composite.id, easyItem.id))
-      await core.execute(AddComponent(composite.id, hardItem.id))
-      easyAssessmentId = await mcqFactory('easy', [easyItem.id])
-      hardAssessmentId = await mcqFactory('hard', [hardItem.id], {
-        prerequisites: [easyItem.id]
+      hardKc = await createKc('hard')
+      easyKc = await createKc('easy')
+      await core.execute(AddToObjective(userObjective.id, easyKc.id))
+      await core.execute(AddToObjective(userObjective.id, hardKc.id))
+      easyAssessmentId = await mcqFactory('easy', [easyKc.id])
+      hardAssessmentId = await mcqFactory('hard', [hardKc.id], {
+        prerequisites: [easyKc.id]
       })
     })
     it('has easy next assessment', async () => {
@@ -83,40 +73,40 @@ describe('Preqs scenario', () => {
     })
   })
   describe(`
-  (easyItem) <-- (easyAssessment) -[:PREQ *2]-> (item)
-  (hardItem) <-- (hardAssessment) -[:PREQ *1]-> (composite) -[:COMP]-> () -[:COMP *3]-> (item)
+  (easyKc) <-- (easyAssessment) -[:PREQ *2]-> (kc)
+  (hardKc) <-- (hardAssessment) -[:PREQ *1]-> (composite) -[:COMP]-> () -[:COMP *3]-> (kc)
   `, () => {
-    let easyItem: Item
-    let hardItem: Item
+    let easyKc: KnowledgeComponent
+    let hardKc: KnowledgeComponent
     let easyAssessmentId: AssessmentId
     let hardAssessmentId: AssessmentId
-    let easyPreq1: Item
-    let easyPreq2: Item
-    let hardPreq1: Item
-    let hardPreq2: Item
-    let hardPreq3: Item
+    let easyPreq1: KnowledgeComponent
+    let easyPreq2: KnowledgeComponent
+    let hardPreq1: KnowledgeComponent
+    let hardPreq2: KnowledgeComponent
+    let hardPreq3: KnowledgeComponent
     beforeEach(async () => {
-      hardItem = await createItem('hard')
-      easyItem = await createItem('easy')
-      await core.execute(AddComponent(composite.id, easyItem.id))
-      await core.execute(AddComponent(composite.id, hardItem.id))
-      easyPreq1 = await createItem('easyPreq1')
-      easyPreq2 = await createItem('easyPreq2')
-      easyAssessmentId = await mcqFactory('easy', [easyItem.id], {
+      hardKc = await createKc('hard')
+      easyKc = await createKc('easy')
+      await core.execute(AddToObjective(userObjective.id, easyKc.id))
+      await core.execute(AddToObjective(userObjective.id, hardKc.id))
+      easyPreq1 = await createKc('easyPreq1')
+      easyPreq2 = await createKc('easyPreq2')
+      easyAssessmentId = await mcqFactory('easy', [easyKc.id], {
         prerequisites: [easyPreq1.id, easyPreq2.id]
       })
-      hardPreq1 = await createItem('hardPreq1')
-      hardPreq2 = await createItem('hardPreq2')
-      hardPreq3 = await createItem('hardPreq3')
-      const hiddenCompositePreq = await createComposite('hiddenCompositePreq', [
+      hardPreq1 = await createKc('hardPreq1')
+      hardPreq2 = await createKc('hardPreq2')
+      hardPreq3 = await createKc('hardPreq3')
+      const hiddenCompositePreq = await createObjective('hiddenCompositePreq', [
         hardPreq1.id,
         hardPreq2.id,
         hardPreq3.id
       ])
-      const compositePreq = await createComposite('compositePreq', [
+      const compositePreq = await createObjective('compositePreq', [
         hiddenCompositePreq.id
       ])
-      hardAssessmentId = await mcqFactory('hard', [hardItem.id], {
+      hardAssessmentId = await mcqFactory('hard', [hardKc.id], {
         prerequisites: [compositePreq.id]
       })
     })

@@ -1,6 +1,7 @@
 import { cypher } from '../../../neo4j/cypher'
 import { UseCaseDependencies } from '../../../core/Core'
 import { Mcq, McqAnswer, McqId } from '../../../domain/Mcq'
+import { NodeType } from '../../../neo4j/NodeType';
 
 export interface SetAnswersGateway {
   setAnswers: (mcq: McqId, answers: McqAnswer[]) => Promise<Mcq>
@@ -13,7 +14,7 @@ export const SetAnswers = (assessmentId: McqId, answers: McqAnswer[]) => ({
 export const createSetAnswersGateway = (): SetAnswersGateway => ({
   setAnswers: async (assessmentId, answers) => {
     const statement = `
-        MATCH (assessment:Assessment {id: {assessmentId}})
+        MATCH (assessment:${NodeType.Assessment} {id: {assessmentId}})
         SET assessment.answers = {answers}
         RETURN assessment`
     const records = await cypher.send(statement, {

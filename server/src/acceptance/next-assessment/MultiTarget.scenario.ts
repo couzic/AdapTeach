@@ -3,30 +3,30 @@ import { expect } from 'chai'
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
-import { Composite } from '../../domain/Composite'
-import { Item } from '../../domain/Item'
+import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
+import { LearningObjective } from '../../domain/LearningObjective'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
-import { AddComponent } from '../../use-case/contribute/composite/AddComponent'
+import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
 import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
-import {
-  CompositeFactory,
-  createCompositeFactory
-} from '../util/CompositeFactory'
-import { createItemFactory, ItemFactory } from '../util/ItemFactory'
+import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
+import {
+  createObjectiveFactory,
+  ObjectiveFactory
+} from '../util/ObjectiveFactory'
 
 describe('Multi-target scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let userObjective: Composite
-  let createItem: ItemFactory
-  let createComposite: CompositeFactory
+  let userObjective: LearningObjective
+  let createKc: KcFactory
+  let createObjective: ObjectiveFactory
   let createMcq: McqFactory
   beforeEach(async () => {
     await cypher.clearDb()
@@ -36,8 +36,8 @@ describe('Multi-target scenario', () => {
       repetitionScheduler: { next: () => Promise.resolve(1) }
     } as any
     core = createCore(dependencies)
-    createItem = createItemFactory(core)
-    createComposite = createCompositeFactory(core)
+    createKc = createKcFactory(core)
+    createObjective = createObjectiveFactory(core)
     createMcq = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
@@ -45,25 +45,25 @@ describe('Multi-target scenario', () => {
         email: 'email'
       } as any)
     )
-    userObjective = await createComposite('User Objective')
+    userObjective = await createObjective('User Objective')
     await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-     (singleTargetAssessment) --> (item) <-- (multiTargetAssessment) --> (anotherItem)
+     (singleTargetAssessment) --> (kc) <-- (multiTargetAssessment) --> (anotherKc)
     `, () => {
-    let item: Item
-    let anotherItem: Item
+    let kc: KnowledgeComponent
+    let anotherKc: KnowledgeComponent
     let singleTargetAssessment: AssessmentId
     let multiTargetAssessment: AssessmentId
     beforeEach(async () => {
-      item = await createItem('item')
-      anotherItem = await createItem('anotherItem')
-      await core.execute(AddComponent(userObjective.id, item.id))
-      await core.execute(AddComponent(userObjective.id, anotherItem.id))
-      singleTargetAssessment = await createMcq('singleTarget', [item.id])
+      kc = await createKc('kc')
+      anotherKc = await createKc('anotherKc')
+      await core.execute(AddToObjective(userObjective.id, kc.id))
+      await core.execute(AddToObjective(userObjective.id, anotherKc.id))
+      singleTargetAssessment = await createMcq('singleTarget', [kc.id])
       multiTargetAssessment = await createMcq('multiTarget', [
-        item.id,
-        anotherItem.id
+        kc.id,
+        anotherKc.id
       ])
     })
     it('has single-target next assessment', async () => {
