@@ -1,6 +1,6 @@
 import { AssessmentId } from '../../domain/Assessment'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
+import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
 
 export type Schedule = Record<KnowledgeComponentId, number>
 
@@ -11,7 +11,7 @@ export interface RepetitionScheduler {
     components: Array<{
       id: KnowledgeComponentId
       repetition?: {
-        next: number
+        time: number
         delay: number
       }
     }>

@@ -27,7 +27,7 @@ describe('Preqs and multi-assessment scenario', () => {
     await cypher.clearDb()
     dependencies = {
       gateway,
-      repetitionScheduler: { next: () => Promise.resolve(1) },
+      repetitionScheduler: { next: () => Promise.resolve({} as any) },
       timeProvider: { now: () => 0 }
     }
     core = createCore(dependencies)
@@ -57,6 +57,10 @@ describe('Preqs and multi-assessment scenario', () => {
     })
     describe("when easy assessment passed and it's time to repeat", () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [kc.id]: 1
+          })
         await core.execute(CheckAnswer(user.id, easyAssessment, 0))
         dependencies.timeProvider.now = () => 2
       })

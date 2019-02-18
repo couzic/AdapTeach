@@ -27,29 +27,29 @@ export const createSimpleRepetitionScheduler = (
       const now = timeProvider.now()
       const schedule = {} as Schedule
       params.components.forEach(kc => {
-        let nextDelay = INITIAL_DELAY
+        let repetitionDelay = INITIAL_DELAY
         if (kc.repetition) {
           const scheduledDelay = kc.repetition.delay
-          const lastScheduledTime = kc.repetition.next - scheduledDelay
+          const lastScheduledTime = kc.repetition.time - scheduledDelay
           const actualDelay = now - lastScheduledTime
           if (params.passed) {
-            nextDelay = nextDelayWhenPasses(
+            repetitionDelay = repetitionDelayWhenPasses(
               scheduledDelay,
               actualDelay,
               extractComponentHistory(kc.id, params.assessments)
             )
           } else {
-            nextDelay = nextDelayWhenFails(scheduledDelay, actualDelay)
+            repetitionDelay = repetitionDelayWhenFails(scheduledDelay, actualDelay)
           }
         }
-        schedule[kc.id] = now + nextDelay
+        schedule[kc.id] = now + repetitionDelay
       })
       return Promise.resolve(schedule)
     }
   }
 })
 
-const nextDelayWhenPasses = (
+const repetitionDelayWhenPasses = (
   scheduledDelay: number,
   actualDelay: number,
   history: Array<{ passed: boolean; time: number }>
@@ -67,7 +67,7 @@ const nextDelayWhenPasses = (
   }
 }
 
-const nextDelayWhenFails = (scheduledDelay: number, actualDelay: number) => {
+const repetitionDelayWhenFails = (scheduledDelay: number, actualDelay: number) => {
   if (actualDelay <= scheduledDelay) {
     return scheduledDelay * ON_FAILURE_DELAY_FACTOR
   } else if (scheduledDelay / actualDelay < ON_FAILURE_DELAY_FACTOR) {

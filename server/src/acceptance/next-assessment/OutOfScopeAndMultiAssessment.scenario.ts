@@ -72,6 +72,10 @@ describe('Out of scope and multi-assessment scenario', () => {
     })
     describe(`when "in scope" assessment passed, and it's time to repeat`, () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [inScopeKc.id]: 1
+          })
         await core.execute(CheckAnswer(user.id, inScopeAssessment, 0))
         dependencies.timeProvider.now = () => 2
       })

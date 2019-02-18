@@ -14,7 +14,7 @@ class SchedulerTestFacade {
     KnowledgeComponentId[]
   > = {} as any
   private readonly repetitionByComponent: Partial<
-    Record<KnowledgeComponentId, { delay: number; next: number }>
+    Record<KnowledgeComponentId, { delay: number; time: number }>
   > = {}
   private readonly assessmentsByComponent: Record<
     KnowledgeComponentId,
@@ -84,9 +84,9 @@ class SchedulerTestFacade {
     components
       .map(_ => _.id)
       .forEach(kcId => {
-        const next = schedule[kcId]
-        const delay = next - this._now
-        this.repetitionByComponent[kcId] = { delay, next }
+        const time = schedule[kcId]
+        const delay = time - this._now
+        this.repetitionByComponent[kcId] = { delay, time }
       })
     return schedule
   }

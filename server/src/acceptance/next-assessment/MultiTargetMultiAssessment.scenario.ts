@@ -1,4 +1,6 @@
-import { expect } from 'chai'
+import chai from 'chai'
+import { stub } from 'sinon'
+import sinonChai from 'sinon-chai'
 
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
@@ -19,6 +21,9 @@ import {
   ObjectiveFactory
 } from '../util/ObjectiveFactory'
 
+chai.use(sinonChai)
+const { expect } = chai
+
 describe('Multi-target multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
@@ -33,7 +38,7 @@ describe('Multi-target multi-assessment scenario', () => {
     dependencies = {
       gateway,
       timeProvider: { now: () => 0 },
-      repetitionScheduler: { next: () => Promise.resolve(1) }
+      repetitionScheduler: { next: () => Promise.resolve({}) }
     } as any
     core = createCore(dependencies)
     createKc = createKcFactory(core)
@@ -72,8 +77,12 @@ describe('Multi-target multi-assessment scenario', () => {
         thirdKc.id
       ])
     })
-    describe(`when first single-target assessment is passed and it's time to repeat`, () => {
+    describe(`when single-target assessment is passed and it's time to repeat`, () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [firstKc.id]: 1
+          })
         await core.execute(CheckAnswer(user.id, firstAssessment, 0))
         dependencies.timeProvider.now = () => 2
       })
@@ -81,6 +90,43 @@ describe('Multi-target multi-assessment scenario', () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
+      })
+    })
+    describe(`when multi-target assessment is passed`, () => {
+      beforeEach(async () => {
+        dependencies.repetitionScheduler.next = stub().returns(
+          Promise.resolve({
+            [firstKc.id]: 1,
+            [secondKc.id]: 1,
+            [thirdKc.id]: 1
+          })
+        )
+        await core.execute(CheckAnswer(user.id, multiTargetAssessment, 0))
+      })
+      it('calls scheduler with proper params', () => {
+        expect(
+          dependencies.repetitionScheduler.next
+        ).to.have.been.calledOnceWithExactly({
+          passed: true,
+          assessmentId: multiTargetAssessment,
+          components: [
+            { id: thirdKc.id, repetition: undefined },
+            { id: secondKc.id, repetition: undefined },
+            { id: firstKc.id, repetition: undefined }
+          ],
+          assessments: [
+            {
+              id: multiTargetAssessment,
+              assessedComponents: [thirdKc.id, secondKc.id, firstKc.id],
+              history: []
+            },
+            {
+              id: firstAssessment,
+              assessedComponents: [firstKc.id],
+              history: []
+            }
+          ]
+        })
       })
     })
   })
@@ -97,6 +143,8 @@ describe('Multi-target multi-assessment scenario', () => {
     let secondAssessment: AssessmentId
     let thirdAssessment: AssessmentId
     beforeEach(async () => {
+      dependencies.repetitionScheduler.next = () =>
+        Promise.resolve({ [firstKc.id]: 1 })
       firstKc = await createKc('first')
       secondKc = await createKc('second')
       await core.execute(AddToObjective(userObjective.id, firstKc.id))
@@ -152,6 +200,10 @@ describe('Multi-target multi-assessment scenario', () => {
     })
     describe('when first, second and third assessments passed', () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [firstKc.id]: 1
+          })
         await core.execute(CheckAnswer(user.id, firstAssessment, 0))
         await core.execute(CheckAnswer(user.id, secondAssessment, 0))
         await core.execute(CheckAnswer(user.id, thirdAssessment, 0))
@@ -172,6 +224,10 @@ describe('Multi-target multi-assessment scenario', () => {
     })
     describe('when first and second assessments failed, then third assessment passed', () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [firstKc.id]: 1
+          })
         await core.execute(CheckAnswer(user.id, firstAssessment, 1))
         await core.execute(CheckAnswer(user.id, secondAssessment, 1))
         await core.execute(CheckAnswer(user.id, thirdAssessment, 0))

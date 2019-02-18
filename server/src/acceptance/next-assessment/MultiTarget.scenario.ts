@@ -1,4 +1,6 @@
-import { expect } from 'chai'
+import chai from 'chai'
+import { stub } from 'sinon'
+import sinonChai from 'sinon-chai'
 
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
@@ -18,6 +20,9 @@ import {
   createObjectiveFactory,
   ObjectiveFactory
 } from '../util/ObjectiveFactory'
+
+chai.use(sinonChai)
+const { expect } = chai
 
 describe('Multi-target scenario', () => {
   const gateway = createCoreGateway()
@@ -71,12 +76,44 @@ describe('Multi-target scenario', () => {
       expect(next).not.to.be.null
       expect(next!.id).to.equal(singleTargetAssessment)
     })
+    describe('when single-target assessment passes', () => {
+      beforeEach(async () => {
+        dependencies.repetitionScheduler.next = stub().returns(
+          Promise.resolve({ [kc.id]: 1 })
+        )
+        await core.execute(CheckAnswer(user.id, singleTargetAssessment, 0))
+      })
+      it('calls scheduler with proper params', () => {
+        expect(
+          dependencies.repetitionScheduler.next
+        ).to.have.been.calledOnceWithExactly({
+          passed: true,
+          assessmentId: singleTargetAssessment,
+          components: [{ id: kc.id, repetition: undefined }],
+          assessments: [
+            {
+              id: multiTargetAssessment,
+              assessedComponents: [kc.id],
+              history: []
+            },
+            {
+              id: singleTargetAssessment,
+              assessedComponents: [kc.id],
+              history: []
+            }
+          ]
+        })
+      })
+    })
     describe(`when single-target assessment passed twice, and it's time to repeat`, () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 1 })
         await core.execute(CheckAnswer(user.id, singleTargetAssessment, 0))
         dependencies.timeProvider.now = () => 2
 
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 3 })
         await core.execute(CheckAnswer(user.id, singleTargetAssessment, 0))
         dependencies.timeProvider.now = () => 4
       })
@@ -87,14 +124,121 @@ describe('Multi-target scenario', () => {
       })
       describe(`when multi-target assessment also passed, and it's time to repeat`, () => {
         beforeEach(async () => {
-          dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+          dependencies.repetitionScheduler.next = stub().returns(
+            Promise.resolve({ [kc.id]: 5, [anotherKc.id]: 5 })
+          )
           await core.execute(CheckAnswer(user.id, multiTargetAssessment, 0))
-          dependencies.timeProvider.now = () => 4
+          dependencies.timeProvider.now = () => 6
+        })
+        it('calls scheduler with correct params', () => {
+          expect(
+            dependencies.repetitionScheduler.next
+          ).to.have.been.calledOnceWithExactly({
+            passed: true,
+            assessmentId: multiTargetAssessment,
+            components: [
+              { id: anotherKc.id, repetition: undefined },
+              { id: kc.id, repetition: { time: 3, delay: 1 } }
+            ],
+            assessments: [
+              {
+                id: multiTargetAssessment,
+                assessedComponents: [anotherKc.id, kc.id],
+                history: []
+              },
+              {
+                id: singleTargetAssessment,
+                assessedComponents: [kc.id],
+                history: [{ passed: true, time: 2 }, { passed: true, time: 0 }]
+              }
+            ]
+          })
         })
         it('has single-target next assessment', async () => {
           const next = await core.execute(GetNextAssessment(user.id))
           expect(next).not.to.be.null
           expect(next!.id).to.equal(singleTargetAssessment)
+        })
+      })
+    })
+  })
+  describe(`
+    (KC-1) <-- (assessment) --> (KC-2)
+  `, () => {
+    let kc1: KnowledgeComponent
+    let kc2: KnowledgeComponent
+    let assessmentId: AssessmentId
+    beforeEach(async () => {
+      kc1 = await createKc('KC-1')
+      kc2 = await createKc('KC-2')
+      await core.execute(AddToObjective(userObjective.id, kc1.id))
+      await core.execute(AddToObjective(userObjective.id, kc2.id))
+      assessmentId = await createMcq('mcq', [kc1.id, kc2.id])
+    })
+    describe('when passed', () => {
+      beforeEach(async () => {
+        dependencies.repetitionScheduler.next = stub().returns(
+          Promise.resolve({ [kc1.id]: 1, [kc2.id]: 1 })
+        )
+        await core.execute(CheckAnswer(user.id, assessmentId, 0))
+      })
+      describe(`when it's time to repeat and passed again`, () => {
+        beforeEach(async () => {
+          dependencies.timeProvider.now = () => 2
+          dependencies.repetitionScheduler.next = stub().returns(
+            Promise.resolve({ [kc1.id]: 3, [kc2.id]: 3 })
+          )
+          await core.execute(CheckAnswer(user.id, assessmentId, 0))
+        })
+        it('calls schedule with proper params', () => {
+          expect(
+            dependencies.repetitionScheduler.next
+          ).to.have.been.calledOnceWithExactly({
+            passed: true,
+            assessmentId,
+            assessments: [
+              {
+                id: assessmentId,
+                assessedComponents: [kc2.id, kc1.id],
+                history: [{ passed: true, time: 0 }]
+              }
+            ],
+            components: [
+              { id: kc2.id, repetition: { time: 1, delay: 1 } },
+              { id: kc1.id, repetition: { time: 1, delay: 1 } }
+            ]
+          })
+        })
+        describe(`when it's, AGAIN, time to repeat and passed again`, () => {
+          beforeEach(async () => {
+            dependencies.timeProvider.now = () => 4
+            dependencies.repetitionScheduler.next = stub().returns(
+              Promise.resolve({ [kc1.id]: 5, [kc2.id]: 5 })
+            )
+            await core.execute(CheckAnswer(user.id, assessmentId, 0))
+          })
+          it('calls schedule with proper params', () => {
+            expect(
+              dependencies.repetitionScheduler.next
+            ).to.have.been.calledOnceWithExactly({
+              passed: true,
+              assessmentId,
+              assessments: [
+                {
+                  id: assessmentId,
+                  assessedComponents: [kc2.id, kc1.id],
+                  history: [
+                    { passed: true, time: 2 },
+                    { passed: true, time: 0 }
+                  ]
+                }
+              ],
+              components: [
+                { id: kc2.id, repetition: { time: 3, delay: 1 } },
+                { id: kc1.id, repetition: { time: 3, delay: 1 } }
+              ]
+            })
+          })
         })
       })
     })
