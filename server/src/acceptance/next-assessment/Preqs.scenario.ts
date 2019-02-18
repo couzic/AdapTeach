@@ -33,7 +33,7 @@ describe('Preqs scenario', () => {
     dependencies = {
       gateway,
       timeProvider: { now: () => 0 },
-      repetitionScheduler: { next: () => Promise.resolve(1) }
+      repetitionScheduler: { next: () => Promise.resolve({}) }
     } as any
     core = createCore(dependencies)
     createKc = createKcFactory(core)
@@ -129,6 +129,12 @@ describe('Preqs scenario', () => {
     })
     describe('when hard prerequisites are activated', () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [hardPreq1.id]: 1,
+            [hardPreq2.id]: 1,
+            [hardPreq3.id]: 1
+          })
         const hardPreqAssessmentId = await mcqFactory('hardPreq', [
           hardPreq1.id,
           hardPreq2.id,
@@ -166,7 +172,12 @@ describe('Preqs scenario', () => {
         await core.execute(CheckAnswer(user.id, easyPreqsAssessmentId, 0))
         await core.execute(CheckAnswer(user.id, hardPreqsAssessmentId, 0))
         dependencies.timeProvider.now = () => 2
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({
+            [hardPreq1.id]: 3,
+            [hardPreq2.id]: 3,
+            [hardPreq3.id]: 3
+          })
         await core.execute(CheckAnswer(user.id, hardPreqsAssessmentId, 0))
       })
       it('has hard next assessment', async () => {

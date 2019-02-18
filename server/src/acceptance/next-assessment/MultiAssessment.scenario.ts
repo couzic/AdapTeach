@@ -1,4 +1,6 @@
-import { expect } from 'chai'
+import chai from 'chai'
+import { stub } from 'sinon'
+import sinonChai from 'sinon-chai'
 
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
@@ -21,6 +23,9 @@ import {
   ObjectiveFactory
 } from '../util/ObjectiveFactory'
 
+chai.use(sinonChai)
+const { expect } = chai
+
 describe('Multi-assessment scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
@@ -35,7 +40,7 @@ describe('Multi-assessment scenario', () => {
     dependencies = {
       gateway,
       timeProvider: { now: () => 0 },
-      repetitionScheduler: { next: () => Promise.resolve(1) }
+      repetitionScheduler: { next: stub().returns(Promise.resolve({})) }
     } as any
     core = createCore(dependencies)
     createKc = createKcFactory(core)
@@ -67,6 +72,19 @@ describe('Multi-assessment scenario', () => {
         await core.execute(CheckAnswer(user.id, secondAssessment, 0))
         dependencies.timeProvider.now = () => 2
       })
+      it('called scheduler with proper params', () => {
+        expect(
+          dependencies.repetitionScheduler.next
+        ).to.have.been.calledOnceWithExactly({
+          passed: true,
+          assessmentId: secondAssessment,
+          components: [{ id: kc.id, repetition: undefined }],
+          assessments: [
+            { id: secondAssessment, assessedComponents: [kc.id], history: [] },
+            { id: firstAssessment, assessedComponents: [kc.id], history: [] }
+          ]
+        })
+      })
       it('has first assessment as next', async () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
@@ -74,7 +92,8 @@ describe('Multi-assessment scenario', () => {
       })
       describe("when first assessment fails and it's time to repeat", () => {
         beforeEach(async () => {
-          dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+          dependencies.repetitionScheduler.next = () =>
+            Promise.resolve({ [kc.id]: 3 })
           await core.execute(CheckAnswer(user.id, firstAssessment, 1))
           dependencies.timeProvider.now = () => 4
         })
@@ -89,30 +108,16 @@ describe('Multi-assessment scenario', () => {
       beforeEach(async () => {
         await core.execute(CheckAnswer(user.id, secondAssessment, 0))
         dependencies.timeProvider.now = () => 2
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 3 })
         await core.execute(CheckAnswer(user.id, firstAssessment, 0))
         dependencies.timeProvider.now = () => 4
-        dependencies.repetitionScheduler.next = () => Promise.resolve(5)
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 5 })
         await core.execute(CheckAnswer(user.id, secondAssessment, 0))
         dependencies.timeProvider.now = () => 6
       })
       it('has first assessment as next', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
-        expect(next).not.to.be.null
-        expect(next!.id).to.equal(firstAssessment)
-      })
-    })
-    describe("when second assessment passes twice, then first assessment fails, and it's time to repeat", () => {
-      beforeEach(async () => {
-        await core.execute(CheckAnswer(user.id, secondAssessment, 0))
-        dependencies.timeProvider.now = () => 2
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
-        await core.execute(CheckAnswer(user.id, secondAssessment, 0))
-        dependencies.timeProvider.now = () => 4
-        dependencies.repetitionScheduler.next = () => Promise.resolve(5)
-        await core.execute(CheckAnswer(user.id, firstAssessment, 1))
-      })
-      it('still has first assessment as next', async () => {
         const next = await core.execute(GetNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
@@ -139,10 +144,11 @@ describe('Multi-assessment scenario', () => {
     })
     describe(`when assessment passed twice, and it's time to repeat`, () => {
       beforeEach(async () => {
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 2 })
         await core.execute(CheckAnswer(user.id, assessment, 0))
         dependencies.timeProvider.now = () => 2
 
-        dependencies
         await core.execute(CheckAnswer(user.id, assessment, 0))
         dependencies.timeProvider.now = () => 2
       })
@@ -167,7 +173,8 @@ describe('Multi-assessment scenario', () => {
         await core.execute(CheckAnswer(user.id, assessment, 0))
         dependencies.timeProvider.now = () => 2
 
-        dependencies.repetitionScheduler.next = () => Promise.resolve(3)
+        dependencies.repetitionScheduler.next = () =>
+          Promise.resolve({ [kc.id]: 3 })
         await core.execute(CheckAnswer(user.id, assessment, 0))
         dependencies.timeProvider.now = () => 4
       })
@@ -176,7 +183,8 @@ describe('Multi-assessment scenario', () => {
         beforeEach(async () => {
           anotherAssessment = await createMcq('another', [kc.id])
 
-          dependencies.repetitionScheduler.next = () => Promise.resolve(7)
+          dependencies.repetitionScheduler.next = () =>
+            Promise.resolve({ [kc.id]: 7 })
           await core.execute(CheckAnswer(user.id, anotherAssessment, 0))
           dependencies.timeProvider.now = () => 8
         })

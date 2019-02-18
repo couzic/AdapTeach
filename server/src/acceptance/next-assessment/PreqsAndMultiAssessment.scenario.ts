@@ -27,7 +27,7 @@ describe('Preqs and multi-assessment scenario', () => {
     await cypher.clearDb()
     dependencies = {
       gateway,
-      repetitionScheduler: { next: () => Promise.resolve(1) },
+      repetitionScheduler: { next: () => Promise.resolve({} as any) },
       timeProvider: { now: () => 0 }
     }
     core = createCore(dependencies)

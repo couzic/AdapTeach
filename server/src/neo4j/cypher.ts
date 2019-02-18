@@ -25,9 +25,11 @@ const send = (statement, parameters) => {
     })
 }
 
+const session = () => driver.session()
+
 const clearDb = async () => {
   await cypher.send('MATCH ()-[r]-() DELETE r', {})
   await cypher.send('MATCH (n) DELETE n ', {})
 }
 
-export const cypher = { send, clearDb }
+export const cypher = { send, session, clearDb }

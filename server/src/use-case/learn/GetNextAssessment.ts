@@ -35,11 +35,11 @@ export const GetNextAssessment = (userId: UserId) => async ({
   return null
 }
 
-// TODO: Filter active assessments
+// TODO Write test to make sure inactive assessments are rejected
 const scheduledComponentMatchClause = `
-  MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (kc:KC) <-[:ASSESSMENT_FOR]- (assessment:Assessment)
+  MATCH (user:User {id: {userId}}) -[learns:LEARNS]-> (kc:KC) <-[:ASSESSMENT_FOR]- (assessment:Assessment {active:true})
   WHERE (user) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (kc)
-  AND   learns.nextRepetition < {now}`
+  AND   learns.repetitionTime < {now}`
 
 const newComponentMatchClause = `
   MATCH (user:User {id: {userId}}) -[:HAS_OBJECTIVE]-> (:Objective) -[:COMPOSED_OF*]-> (kc:KC) <-[:ASSESSMENT_FOR]- (assessment:Assessment {active: true})
@@ -59,21 +59,21 @@ const baseQuery = `
     )
   OPTIONAL
     MATCH (learnedPreq:KC) <-[learns:LEARNS]- (user)
-    WHERE learns.nextRepetition < {now}
+    WHERE learns.repetitionTime < {now}
     AND (
       (assessment) -[:HAS_PREREQUISITE]-> (learnedPreq)
       OR
       (assessment) -[:HAS_PREREQUISITE]-> (:Objective) -[:COMPOSED_OF*]-> (learnedPreq)
     )
   OPTIONAL
-    MATCH (user) -[tried:TRIED]-> (assessment)
+    MATCH (user) -[maybeNext:MAYBE_NEXT]-> (assessment)
   OPTIONAL
     MATCH (assessment) -[:ASSESSMENT_FOR]-> (target:KC)
   WITH
     assessment,
     COUNT(outOfScopeTarget) as outOfScopeTargets,
     COUNT(DISTINCT newPreq) + COUNT(DISTINCT learnedPreq) as preqs,
-    COALESCE(tried.skipped, 0) as skipped,
+    COALESCE(maybeNext.skipped, 0) as skipped,
     COUNT(target) as targets
   WITH
     assessment,
@@ -85,16 +85,17 @@ const baseQuery = `
   ORDER BY outOfScopeTargets, preqs, priority DESC, targets
   LIMIT 1`
 
+const forScheduledKcStatement = scheduledComponentMatchClause + baseQuery
+const forNewKcStatement = newComponentMatchClause + baseQuery
+
 export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
   nextAssessmentForScheduledKc: async (userId, now) => {
-    const statement = scheduledComponentMatchClause + baseQuery
-    const records = await cypher.send(statement, { userId, now })
+    const records = await cypher.send(forScheduledKcStatement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties
   },
   nextAssessmentForNewKc: async (userId, now) => {
-    const statement = newComponentMatchClause + baseQuery
-    const records = await cypher.send(statement, { userId, now })
+    const records = await cypher.send(forNewKcStatement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties
   }

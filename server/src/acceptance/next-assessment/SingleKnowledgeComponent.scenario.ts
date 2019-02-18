@@ -1,4 +1,6 @@
-import { expect } from 'chai'
+import chai from 'chai'
+import { stub } from 'sinon'
+import sinonChai from 'sinon-chai'
 
 import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
@@ -21,7 +23,10 @@ import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
-describe('Single Kc', () => {
+chai.use(sinonChai)
+const { expect } = chai
+
+describe('Single Knowledge Component scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
@@ -34,7 +39,7 @@ describe('Single Kc', () => {
     dependencies = {
       gateway,
       timeProvider: { now: () => 0 },
-      repetitionScheduler: { next: () => Promise.resolve(1) }
+      repetitionScheduler: { next: () => Promise.resolve({}) }
     } as any
     core = createCore(dependencies)
     mcqFactory = createMcqFactory(core)
@@ -85,7 +90,22 @@ describe('Single Kc', () => {
       })
       describe('when assessment passed', () => {
         beforeEach(async () => {
+          dependencies.repetitionScheduler.next = stub().returns(
+            Promise.resolve({ [kc.id]: 1 })
+          )
           await core.execute(CheckAnswer(user.id, assessmentId, 0))
+        })
+        it('called scheduler with proper params', () => {
+          expect(
+            dependencies.repetitionScheduler.next
+          ).to.have.been.calledOnceWithExactly({
+            passed: true,
+            assessmentId,
+            components: [{ id: kc.id, repetition: undefined }],
+            assessments: [
+              { id: assessmentId, assessedComponents: [kc.id], history: [] }
+            ]
+          })
         })
         it('does NOT have next assessment', async () => {
           const next = await core.execute(GetNextAssessment(user.id))
@@ -100,16 +120,54 @@ describe('Single Kc', () => {
             expect(next).not.to.be.null
             expect(next!.id).to.equal(assessmentId)
           })
+          describe('when assessment passed again', () => {
+            beforeEach(async () => {
+              dependencies.repetitionScheduler.next = stub().returns(
+                Promise.resolve({ [kc.id]: 3 })
+              )
+              await core.execute(CheckAnswer(user.id, assessmentId, 0))
+            })
+            it('called scheduler with proper params', () => {
+              expect(
+                dependencies.repetitionScheduler.next
+              ).to.have.been.calledOnceWithExactly({
+                passed: true,
+                assessmentId,
+                components: [{ id: kc.id, repetition: { delay: 1, time: 1 } }],
+                assessments: [
+                  {
+                    id: assessmentId,
+                    assessedComponents: [kc.id],
+                    history: [{ passed: true, time: 0 }]
+                  }
+                ]
+              })
+            })
+          })
         })
       })
+
       describe('when assessment fails', () => {
         beforeEach(async () => {
+          dependencies.repetitionScheduler.next = () =>
+            Promise.resolve({
+              [kc.id]: 1
+            })
           await core.execute(CheckAnswer(user.id, assessmentId, 1))
         })
-        it('has next assessment', async () => {
+        it('has NO next assessment', async () => {
           const next = await core.execute(GetNextAssessment(user.id))
-          expect(next).not.to.be.null
-          expect(next!.id).to.equal(assessmentId)
+          expect(next).to.be.null
+        })
+        describe(`when it's time to repeat`, () => {
+          beforeEach(() => {
+            dependencies.timeProvider.now = () => 2
+          })
+          it('has next assessment', async () => {
+            const next = await core.execute(GetNextAssessment(user.id))
+            expect(next).not.to.be.null
+            expect(next!.id).to.equal(assessmentId)
+          })
         })
       })
     })
