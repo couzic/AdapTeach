@@ -1,12 +1,12 @@
 import { KnowledgeComponentId } from './KnowledgeComponent'
 import { KnowledgeCompositeId } from './KnowledgeComposite'
 
-export interface AssessmentBase<F extends { id: string; type: string }> {
-  id: F['id']
-  type: F['type']
+export interface AssessmentBase<Fields extends { id: string; type: string }> {
+  id: Fields['id']
+  type: Fields['type']
   active: boolean
   prerequisites: KnowledgeCompositeId[]
-  assessedItems: KnowledgeComponentId[]
+  assessedComponents: KnowledgeComponentId[]
   activelyRecalledItems: KnowledgeComponentId[]
   passivelyRecalledItems: KnowledgeComponentId[]
 }
