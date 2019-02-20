@@ -3,7 +3,6 @@
     "noImplicitAny": false, // TODO Remove
     "target": "esnext",
     "lib": ["esnext"],
-    "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -11,9 +10,9 @@
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "resolveJsonModule": true,
-    "noEmit": true,
     "moduleResolution": "node",
     "outDir": "build"
   },
-  "include": ["src"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["**/*.test.ts", "**/*.scenario.ts"]
 }

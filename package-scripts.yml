@@ -1,0 +1,19 @@
+scripts:
+  postinstall: nps install.client install.server
+  install:
+    client: cd client && npm install
+    server:
+      default: cd server && npm install
+      production: cd server && npm install --production
+  clean:
+    default: nps clean.client clean.server
+    client: rm -r client/build
+    server: rm -r server/build
+  build:
+    default: nps clean build.client build.server
+    client: cd client && npm run build
+    server: cd server && npm run build
+  prune:
+    default: nps prune.client prune.server install.server.production
+    client: rm -r client/node_modules
+    server: rm -r server/node_modules

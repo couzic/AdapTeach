@@ -1,0 +1,30 @@
+{
+  "name": "adapteach",
+  "version": "0.0.1",
+  "description": "Adaptive learning for Each and everyone of us",
+  "scripts": {
+    "deploy": "git push heroku master",
+    "postinstall": "nps postinstall",
+    "heroku-postbuild": "nps build prune",
+    "start": "node server/build/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/couzic/AdapTeach.git"
+  },
+  "author": "Mikael Couzic",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/couzic/AdapTeach/issues"
+  },
+  "homepage": "https://github.com/couzic/AdapTeach#readme",
+  "engines": {
+    "node": "10.x"
+  },
+  "devDependencies": {
+    "nps": "5.9.3",
+    "nps-utils": "1.7.0",
+    "tslint": "5.12.1",
+    "typescript": "3.3.3"
+  }
+}

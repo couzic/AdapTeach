@@ -1,3 +1,5 @@
+import 'mocha'
+
 import chai from 'chai'
 import { stub } from 'sinon'
 import sinonChai from 'sinon-chai'

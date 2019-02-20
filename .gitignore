@@ -1,12 +1,9 @@
-#############
-## CLIENT ##
-###########
+
+# VS Code
+.vscode
 
 # dependencies
-/client/node_modules
-
-# production
-/build
+/node_modules
 
 # misc
 .env.local
@@ -19,14 +16,24 @@ yarn-debug.log*
 yarn-error.log*
 
 #############
+## CLIENT ##
+###########
+
+# dependencies
+/client/node_modules
+
+# build
+/client/build
+
+#############
 ## SERVER ##
 ###########
 
 # dependencies
 /server/node_modules
 
-# TODO
-/server/src/acceptance/TODO
+# build
+/server/build
 
 # ENV
 /server/env
