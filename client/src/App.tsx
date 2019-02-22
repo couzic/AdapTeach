@@ -18,7 +18,7 @@ class App extends Component {
           </p>
           <a
             className="App-link"
-            href={`https://www.linkedin.com/oauth/v2/authorization?client_id=${clientId}&redirect_uri=${redirectUri}`}
+            href={`https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`}
             target="_blank"
           >
             Login with LinkedIn
