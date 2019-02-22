@@ -19,8 +19,8 @@ export const authRoute: Route = router => {
       redirectUri +
       '&code=' +
       code
-    const response = await axios.get(url)
+    // const response = await axios.get(url)
     ctx.status = 200
-    ctx.body = response.data
+    ctx.body = url
   })
 }
