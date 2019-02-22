@@ -1,6 +1,11 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+
+import React, { Component } from 'react'
+
+import logo from './logo.svg'
+
+const clientId = '77z5wn7na1pdp3'
+const redirectUri = 'https://adapteach-web.herokuapp.com/auth/linkedin/callback'
 
 class App extends Component {
   render() {
@@ -13,16 +18,15 @@ class App extends Component {
           </p>
           <a
             className="App-link"
-            href="https://reactjs.org"
+            href={`https://www.linkedin.com/oauth/v2/authorization?client_id=${clientId}&redirect_uri=${redirectUri}`}
             target="_blank"
-            rel="noopener noreferrer"
           >
-            Learn React
+            Login with LinkedIn
           </a>
         </header>
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App

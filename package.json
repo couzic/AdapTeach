@@ -6,7 +6,8 @@
     "deploy": "git push heroku master",
     "postinstall": "nps postinstall",
     "heroku-postbuild": "nps build prune",
-    "start": "node server/build/index.js"
+    "start": "node server/build/index.js",
+    "db": "heroku addons:open graphenedb"
   },
   "repository": {
     "type": "git",

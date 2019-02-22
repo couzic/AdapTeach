@@ -2,14 +2,25 @@ const neo4j = require('neo4j-driver').v1
 
 const url = 'bolt://localhost'
 
-const auth = {
-  user: 'neo4j',
-  pass: 'password'
-}
+let driver: any
 
-const driver = neo4j.driver(url, neo4j.auth.basic(auth.user, auth.pass), {
-  encrypted: false
-})
+if (process.env.NODE_ENV === 'production') {
+  const graphenedbURL = process.env.GRAPHENEDB_BOLT_URL
+  const graphenedbUser = process.env.GRAPHENEDB_BOLT_USER
+  const graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD
+  driver = neo4j.driver(
+    graphenedbURL,
+    neo4j.auth.basic(graphenedbUser, graphenedbPass)
+  )
+} else {
+  const auth = {
+    user: 'neo4j',
+    pass: 'password'
+  }
+  driver = neo4j.driver(url, neo4j.auth.basic(auth.user, auth.pass), {
+    encrypted: false
+  })
+}
 
 const send = (statement, parameters) => {
   const session = driver.session()
