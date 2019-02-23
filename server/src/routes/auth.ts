@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Route } from './Route'
 
 const clientId = process.env.LINKEDIN_CLIENT_ID
-const clientSecret = process.env.LINKEDIN_CLIENT_SECRECT
+const clientSecret = process.env.LINKEDIN_CLIENT_SECRET
 const redirectUri = 'https://adapteach-web.herokuapp.com/auth/linkedin/callback'
 
 export const authRoute: Route = router => {
