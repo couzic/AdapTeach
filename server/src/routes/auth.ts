@@ -21,6 +21,6 @@ export const authRoute: Route = router => {
       code
     const response = await axios.get(url)
     ctx.status = 200
-    ctx.body = response
+    ctx.body = response.data
   })
 }
