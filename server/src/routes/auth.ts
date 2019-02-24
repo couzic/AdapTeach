@@ -1,4 +1,5 @@
 import axios from 'axios'
+import querystring from 'querystring'
 
 import { Route } from './Route'
 
@@ -11,13 +12,14 @@ export const authRoute: Route = router => {
   router.get('/auth/linkedin/callback', async ctx => {
     const { code } = ctx.query
     const accessTokenUrl = 'https://www.linkedin.com/oauth/v2/accessToken'
-    const accessTokenRequestBody = {
+    const accessTokenRequestBody = querystring.stringify({
+      // stringify because x-www-form-urlencoded
       grant_type: 'authorization_code',
       client_id,
       client_secret,
       redirect_uri,
       code
-    }
+    })
     console.log(accessTokenUrl, accessTokenRequestBody)
     const accessTokenResponse = await axios.post(
       accessTokenUrl,
