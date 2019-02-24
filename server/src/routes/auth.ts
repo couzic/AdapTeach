@@ -19,10 +19,11 @@ export const authRoute: Route = router => {
       code
     })
     const { access_token } = accessTokenResponse.data
+    console.log({ access_token })
 
     // https://docs.microsoft.com/en-us/linkedin/shared/references/v2/profile/lite-profile
-    const apiUrl = 'https://api.linkedin.com/v2/me'
-    const apiResponse = await axios.get(apiUrl, {
+    const userProfileUrl = 'https://api.linkedin.com/v2/me'
+    const apiResponse = await axios.get(userProfileUrl, {
       headers: {
         Authorization: 'Bearer ' + access_token
       }

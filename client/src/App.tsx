@@ -12,7 +12,7 @@ const linkedinAuthUrl =
   'https://www.linkedin.com/oauth/v2/authorization?response_type=code' +
   `&client_id=${clientId}` +
   `&redirect_uri=${redirectUri}` +
-  `&scope='${scope}`
+  `&scope=${scope}`
 
 class App extends Component {
   render() {
