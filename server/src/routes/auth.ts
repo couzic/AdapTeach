@@ -21,7 +21,12 @@ export const authRoute: Route = router => {
     console.log(accessTokenUrl, accessTokenRequestBody)
     const accessTokenResponse = await axios.post(
       accessTokenUrl,
-      accessTokenRequestBody
+      accessTokenRequestBody,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
     )
     const { access_token } = accessTokenResponse.data
     console.log({ access_token })
