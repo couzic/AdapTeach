@@ -47,9 +47,10 @@ describe('Single Knowledge Component scenario', () => {
     mcqFactory = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
-        username: 'username',
-        email: 'email'
-      } as any)
+        linkedInId: 'LinkedInUserId',
+        firstName: 'firstName',
+        lastName: 'lastName'
+      })
     )
     kc = await core.execute(
       CreateKnowledgeComponent({

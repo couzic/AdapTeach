@@ -20,7 +20,7 @@ import {
   ObjectiveFactory
 } from '../util/ObjectiveFactory'
 
-describe('Preqs and Out of scope scenario', () => {
+describe('Out of scope and Preqs scenario', () => {
   const gateway = createCoreGateway()
   let dependencies: CoreDependencies
   let core: Core
@@ -42,9 +42,10 @@ describe('Preqs and Out of scope scenario', () => {
     mcqFactory = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
-        username: 'username',
-        email: 'email'
-      } as any)
+        linkedInId: 'LinkedInUserId',
+        firstName: 'firstName',
+        lastName: 'lastName'
+      })
     )
     userObjective = await core.execute(
       CreateLearningObjective({ name: 'User objective' })

@@ -2,7 +2,7 @@
   "name": "adapteach-server",
   "private": true,
   "scripts": {
-    "local": "ts-node-dev src/index.ts",
+    "local": "cross-env NODE_ENV=local ts-node-dev src/index.ts",
     "test": "cross-env NODE_ENV=test mocha --opts mocha.opts",
     "tdd": "npm test -- --watch",
     "test-acceptance": "cross-env NODE_ENV=test mocha --opts mocha.acceptance.opts",
@@ -35,6 +35,7 @@
     "@types/uuid": "^3.4.4",
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
+    "dotenv": "6.2.0",
     "mocha": "^5.2.0",
     "neo4j-driver": "^1.7.2",
     "sinon": "7.2.4",

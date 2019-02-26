@@ -41,9 +41,10 @@ describe('Preqs scenario', () => {
     mcqFactory = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
-        username: 'username',
-        email: 'email'
-      } as any)
+        linkedInId: 'LinkedInUserId',
+        firstName: 'firstName',
+        lastName: 'lastName'
+      })
     )
     userObjective = await createObjective('User Objective')
     await core.execute(AddLearningObjective(user.id, userObjective.id))

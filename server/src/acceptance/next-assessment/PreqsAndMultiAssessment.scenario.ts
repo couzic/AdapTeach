@@ -29,11 +29,15 @@ describe('Preqs and multi-assessment scenario', () => {
       gateway,
       repetitionScheduler: { next: () => Promise.resolve({} as any) },
       timeProvider: { now: () => 0 }
-    }
+    } as any
     core = createCore(dependencies)
     createAssessment = createMcqFactory(core)
     user = await core.execute(
-      CreateUser({ username: 'user', email: 'email' } as any)
+      CreateUser({
+        linkedInId: 'LinkedInUserId',
+        firstName: 'firstName',
+        lastName: 'lastName'
+      })
     )
     objective = await core.execute(
       CreateLearningObjective({ name: 'objective' })

@@ -1,5 +1,5 @@
-import { createSimpleRepetitionScheduler } from '../core/adapters/SimpleRepetitionScheduler'
 import { createRealTimeProvider } from '../core/adapters/RealTimeProvider'
+import { createSimpleRepetitionScheduler } from '../core/adapters/SimpleRepetitionScheduler'
 import { createCore } from '../core/Core'
 import { createCoreGateway } from '../core/CoreGateway'
 import { cleanupDb } from './cleanupDb'
@@ -15,7 +15,8 @@ const start = async () => {
   const core = createCore({
     gateway,
     timeProvider,
-    repetitionScheduler
+    repetitionScheduler,
+    linkedIn: {} as any
   })
 
   await populateDb(core)

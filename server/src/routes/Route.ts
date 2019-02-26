@@ -1,3 +1,5 @@
 import Router from 'koa-router'
 
-export type Route = (router: Router) => void
+import { Core } from '../core/Core'
+
+export type Route = (router: Router, core: Core) => void

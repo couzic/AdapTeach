@@ -1,3 +1,5 @@
+import 'mocha'
+
 import chai from 'chai'
 import { stub } from 'sinon'
 import sinonChai from 'sinon-chai'
@@ -48,9 +50,10 @@ describe('Multi-assessment scenario', () => {
     createMcq = createMcqFactory(core)
     user = await core.execute(
       CreateUser({
-        username: 'username',
-        email: 'email'
-      } as any)
+        linkedInId: 'LinkedInUserId',
+        firstName: 'firstName',
+        lastName: 'lastName'
+      })
     )
     userObjective = await core.execute(
       CreateLearningObjective({ name: 'userObjective' })

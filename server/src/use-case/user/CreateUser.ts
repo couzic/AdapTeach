@@ -1,6 +1,6 @@
-import { cypher } from '../../neo4j/cypher'
 import { UseCaseDependencies } from '../../core/Core'
-import { User, UserFields, UserId } from '../../domain/User'
+import { User, UserFields } from '../../domain/User'
+import { cypher } from '../../neo4j/cypher'
 import { NodeType } from '../../neo4j/NodeType'
 
 export interface CreateUserGateway {
@@ -13,7 +13,7 @@ export const CreateUser = (fields: UserFields) => async ({
 }: UseCaseDependencies) =>
   gateway.createUser({
     ...fields,
-    id: idFactory.createId() as UserId
+    id: idFactory.createId()
   })
 
 export const createCreateUserGateway = (): CreateUserGateway => ({
@@ -21,8 +21,9 @@ export const createCreateUserGateway = (): CreateUserGateway => ({
     const statement = `
       CREATE (user:${NodeType.User} {
         id: {id},
-        username: {username},
-        email: {email}
+        linkedInId: {linkedInId},
+        firstName: {firstName},
+        lastName: {lastName}
       })
       RETURN user`
     const records = await cypher.send(statement, user)
