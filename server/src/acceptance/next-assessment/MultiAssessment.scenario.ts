@@ -16,7 +16,7 @@ import { AddToObjective } from '../../use-case/contribute/objective/AddToObjecti
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
@@ -92,7 +92,7 @@ describe('Multi-assessment scenario', () => {
         })
       })
       it('has first assessment as next', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
       })
@@ -104,7 +104,7 @@ describe('Multi-assessment scenario', () => {
           dependencies.timeProvider.now = () => 4
         })
         it('has second assessment as next', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
+          const next = await core.execute(FindNextAssessment(user.id))
           expect(next).not.to.be.null
           expect(next!.id).to.equal(secondAssessment)
         })
@@ -126,7 +126,7 @@ describe('Multi-assessment scenario', () => {
         dependencies.timeProvider.now = () => 6
       })
       it('has first assessment as next', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(firstAssessment)
       })
@@ -161,7 +161,7 @@ describe('Multi-assessment scenario', () => {
         dependencies.timeProvider.now = () => 2
       })
       it('has distant next assessment', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(distantAssessment)
       })
@@ -199,7 +199,7 @@ describe('Multi-assessment scenario', () => {
           dependencies.timeProvider.now = () => 8
         })
         it('has first as next assessment ', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
+          const next = await core.execute(FindNextAssessment(user.id))
           expect(next).not.to.be.null
           expect(next!.id).to.equal(assessment)
         })

@@ -3,29 +3,29 @@ import { Assessment } from '../../domain/Assessment'
 import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 
-export interface GetNextAssessmentGateway {
-  nextAssessmentForScheduledKc: (
+export interface FindNextAssessmentGateway {
+  findNextAssessmentForScheduledKc: (
     userId: UserId,
     now: number
   ) => Promise<Assessment | null>
-  nextAssessmentForNewKc: (
+  findNextAssessmentForNewKc: (
     userId: UserId,
     now: number
   ) => Promise<Assessment | null>
 }
 
-export const GetNextAssessment = (userId: UserId) => async ({
+export const FindNextAssessment = (userId: UserId) => async ({
   gateway,
   timeProvider
 }: UseCaseDependencies) => {
-  const nextAssessmentForScheduledKc = await gateway.nextAssessmentForScheduledKc(
+  const nextAssessmentForScheduledKc = await gateway.findNextAssessmentForScheduledKc(
     userId,
     timeProvider.now()
   )
   if (nextAssessmentForScheduledKc) {
     return nextAssessmentForScheduledKc
   }
-  const nextAssessmentForNewKc = await gateway.nextAssessmentForNewKc(
+  const nextAssessmentForNewKc = await gateway.findNextAssessmentForNewKc(
     userId,
     timeProvider.now()
   )
@@ -88,13 +88,13 @@ const baseQuery = `
 const forScheduledKcStatement = scheduledComponentMatchClause + baseQuery
 const forNewKcStatement = newComponentMatchClause + baseQuery
 
-export const createGetNextAssessmentGateway = (): GetNextAssessmentGateway => ({
-  nextAssessmentForScheduledKc: async (userId, now) => {
+export const createFindNextAssessmentGateway = (): FindNextAssessmentGateway => ({
+  findNextAssessmentForScheduledKc: async (userId, now) => {
     const records = await cypher.send(forScheduledKcStatement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties
   },
-  nextAssessmentForNewKc: async (userId, now) => {
+  findNextAssessmentForNewKc: async (userId, now) => {
     const records = await cypher.send(forNewKcStatement, { userId, now })
     if (records.length === 0) return null
     return records[0].get('assessment').properties

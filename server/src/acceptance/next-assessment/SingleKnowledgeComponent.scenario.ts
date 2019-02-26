@@ -21,7 +21,7 @@ import { AddToObjective } from '../../use-case/contribute/objective/AddToObjecti
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
@@ -79,7 +79,7 @@ describe('Single Knowledge Component scenario', () => {
       )
     })
     it('does NOT have next assessment', async () => {
-      const next = await core.execute(GetNextAssessment(user.id))
+      const next = await core.execute(FindNextAssessment(user.id))
       expect(next).to.be.null
     })
     describe('when assessment is activated', () => {
@@ -87,7 +87,7 @@ describe('Single Knowledge Component scenario', () => {
         await core.execute(ActivateAssessment(assessmentId))
       })
       it('has next assessment', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(assessmentId)
       })
@@ -111,7 +111,7 @@ describe('Single Knowledge Component scenario', () => {
           })
         })
         it('does NOT have next assessment', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
+          const next = await core.execute(FindNextAssessment(user.id))
           expect(next).to.be.null
         })
         describe("when it's time to repeat", () => {
@@ -119,7 +119,7 @@ describe('Single Knowledge Component scenario', () => {
             dependencies.timeProvider.now = () => 2
           })
           it('has next assessment', async () => {
-            const next = await core.execute(GetNextAssessment(user.id))
+            const next = await core.execute(FindNextAssessment(user.id))
             expect(next).not.to.be.null
             expect(next!.id).to.equal(assessmentId)
           })
@@ -159,7 +159,7 @@ describe('Single Knowledge Component scenario', () => {
           await core.execute(CheckAnswer(user.id, assessmentId, 1))
         })
         it('has NO next assessment', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
+          const next = await core.execute(FindNextAssessment(user.id))
           expect(next).to.be.null
         })
         describe(`when it's time to repeat`, () => {
@@ -167,7 +167,7 @@ describe('Single Knowledge Component scenario', () => {
             dependencies.timeProvider.now = () => 2
           })
           it('has next assessment', async () => {
-            const next = await core.execute(GetNextAssessment(user.id))
+            const next = await core.execute(FindNextAssessment(user.id))
             expect(next).not.to.be.null
             expect(next!.id).to.equal(assessmentId)
           })

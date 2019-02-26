@@ -12,7 +12,7 @@ import { cypher } from '../../neo4j/cypher'
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
@@ -73,7 +73,7 @@ describe('Multi-target scenario', () => {
       ])
     })
     it('has single-target next assessment', async () => {
-      const next = await core.execute(GetNextAssessment(user.id))
+      const next = await core.execute(FindNextAssessment(user.id))
       expect(next).not.to.be.null
       expect(next!.id).to.equal(singleTargetAssessment)
     })
@@ -119,7 +119,7 @@ describe('Multi-target scenario', () => {
         dependencies.timeProvider.now = () => 4
       })
       it('has multi-target next assessment', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(multiTargetAssessment)
       })
@@ -156,7 +156,7 @@ describe('Multi-target scenario', () => {
           })
         })
         it('has single-target next assessment', async () => {
-          const next = await core.execute(GetNextAssessment(user.id))
+          const next = await core.execute(FindNextAssessment(user.id))
           expect(next).not.to.be.null
           expect(next!.id).to.equal(singleTargetAssessment)
         })

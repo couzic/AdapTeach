@@ -11,7 +11,7 @@ import { AddPrerequisite } from '../../use-case/contribute/assessment/AddPrerequ
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createKcFactory, KcFactory } from '../util/KcFactory'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
@@ -73,7 +73,7 @@ describe('Out of scope and Preqs scenario', () => {
       await core.execute(AddPrerequisite(inScopeAssessment, preq.id))
     })
     it('has "in scope" next assessment', async () => {
-      const next = await core.execute(GetNextAssessment(user.id))
+      const next = await core.execute(FindNextAssessment(user.id))
       expect(next).not.to.be.null
       expect(next!.id).to.equal(inScopeAssessment)
     })

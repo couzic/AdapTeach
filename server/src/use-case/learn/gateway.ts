@@ -1,9 +1,9 @@
 import { createAddLearningObjectiveGateway } from './AddLearningObjective'
 import { createCheckAnswerGateway } from './CheckAnswer'
-import { createGetNextAssessmentGateway } from './GetNextAssessment'
+import { createFindNextAssessmentGateway } from './FindNextAssessment'
 
 export const createLearnGateway = () => ({
   ...createAddLearningObjectiveGateway(),
   ...createCheckAnswerGateway(),
-  ...createGetNextAssessmentGateway()
+  ...createFindNextAssessmentGateway()
 })

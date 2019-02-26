@@ -12,7 +12,7 @@ import { AddToObjective } from '../../use-case/contribute/objective/AddToObjecti
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
-import { GetNextAssessment } from '../../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../../use-case/user/CreateUser'
 import { createMcqFactory, McqFactory } from '../util/McqFactory'
 
@@ -69,7 +69,7 @@ describe('Preqs and multi-assessment scenario', () => {
         dependencies.timeProvider.now = () => 2
       })
       it('has easy assessment as next', async () => {
-        const next = await core.execute(GetNextAssessment(user.id))
+        const next = await core.execute(FindNextAssessment(user.id))
         expect(next).not.to.be.null
         expect(next!.id).to.equal(easyAssessment)
       })

@@ -1,17 +1,17 @@
+import { createKcFactory } from '../acceptance/util/KcFactory'
 import { createMcqFactory } from '../acceptance/util/McqFactory'
+import { createObjectiveFactory } from '../acceptance/util/ObjectiveFactory'
 import { Core } from '../core/Core'
 import { ActivateAssessment } from '../use-case/contribute/assessment/ActivateAssessment'
 import { AddAssessedComponent } from '../use-case/contribute/assessment/AddAssessedComponent'
 import { CreateAssessment } from '../use-case/contribute/assessment/CreateAssessment'
 import { SetAnswers } from '../use-case/contribute/assessment/SetAnswers'
 import { SetQuestion } from '../use-case/contribute/assessment/SetQuestion'
+import { CreateKnowledgeComponent } from '../use-case/contribute/component/CreateKnowledgeComponent'
 import { AddLearningObjective } from '../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../use-case/learn/CheckAnswer'
-import { GetNextAssessment } from '../use-case/learn/GetNextAssessment'
+import { FindNextAssessment } from '../use-case/learn/FindNextAssessment'
 import { CreateUser } from '../use-case/user/CreateUser'
-import { CreateKnowledgeComponent } from '../use-case/contribute/component/CreateKnowledgeComponent';
-import { createKcFactory } from '../acceptance/util/KcFactory';
-import { createObjectiveFactory } from '../acceptance/util/ObjectiveFactory';
 
 export const populateDb = async (core: Core) => {
   console.log('Start populating DB')
@@ -109,7 +109,9 @@ What value will be printed in the console ?`
       type: 'MCQ'
     })
   )
-  await core.execute(AddAssessedComponent(ofMultipleValuesMcq, ofMultipleValues))
+  await core.execute(
+    AddAssessedComponent(ofMultipleValuesMcq, ofMultipleValues)
+  )
   await core.execute(AddAssessedComponent(ofMultipleValuesMcq, subscribe))
   await core.execute(
     SetQuestion(
@@ -207,21 +209,21 @@ What value will be printed in the console ?`
 
   console.log('Start learning')
 
-  let nextAssessment = await core.execute(GetNextAssessment(userId))
+  let nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment!.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
-  nextAssessment = await core.execute(GetNextAssessment(userId))
+  nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment!.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
-  nextAssessment = await core.execute(GetNextAssessment(userId))
+  nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment!.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
-  nextAssessment = await core.execute(GetNextAssessment(userId))
+  nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment!.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 0))
-  nextAssessment = await core.execute(GetNextAssessment(userId))
+  nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment && nextAssessment.question)
   await core.execute(CheckAnswer(userId, nextAssessment!.id, 1))
-  nextAssessment = await core.execute(GetNextAssessment(userId))
+  nextAssessment = await core.execute(FindNextAssessment(userId))
   console.log(nextAssessment && nextAssessment.question)
 }
