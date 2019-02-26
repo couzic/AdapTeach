@@ -11,13 +11,13 @@ import {
   LinkedInGateway,
   LinkedInUserProfile
 } from '../../../core/ports/LinkedInGateway'
-import { User, UserId } from '../../../domain/User'
+import { User } from '../../../domain/User'
 import { SignInWithLinkedIn } from './SignInWithLinkedIn'
 
 chai.use(sinonChai)
 const { expect } = chai
 
-describe('Sign in with LinkedIn scenario', () => {
+describe('SignInWithLinkedIn', () => {
   let gateway: CoreGateway
   let linkedIn: LinkedInGateway
   let idFactory: IdFactory
@@ -37,14 +37,13 @@ describe('Sign in with LinkedIn scenario', () => {
   describe('when new user signs in successfully', () => {
     const authorizationCode = 'authCode'
     const token = 'token'
-    const userId: UserId = 'UserId'
     const linkedInUserProfile: LinkedInUserProfile = {
       id: 'LinkedInUserId',
       firstName: 'Mikael',
       lastName: 'Couzic'
     }
     const user: User = {
-      id: userId,
+      id: 'UserId',
       linkedInId: linkedInUserProfile.id,
       firstName: linkedInUserProfile.firstName,
       lastName: linkedInUserProfile.lastName
@@ -53,7 +52,8 @@ describe('Sign in with LinkedIn scenario', () => {
     beforeEach(async () => {
       linkedIn.getAccessToken = stub().returns({ token })
       linkedIn.getUserProfile = stub().returns(linkedInUserProfile)
-      idFactory.createId = () => userId
+      gateway.findLinkedInUser = () => Promise.resolve(null)
+      idFactory.createId = () => user.id
       gateway.createUser = stub().returns(user)
       createdUser = await core.execute(SignInWithLinkedIn(authorizationCode))
     })
@@ -70,6 +70,35 @@ describe('Sign in with LinkedIn scenario', () => {
     })
     it('returns created user', () => {
       expect(createdUser).to.deep.equal(user)
+    })
+  })
+  describe('when existing user signs in successfully', () => {
+    const linkedInUserProfile: LinkedInUserProfile = {
+      id: 'LinkedInUserId',
+      firstName: 'Mikael',
+      lastName: 'Couzic'
+    }
+    const { id: linkedInId, firstName, lastName } = linkedInUserProfile
+    const user: User = {
+      id: 'UserId',
+      linkedInId,
+      firstName,
+      lastName
+    }
+    let foundUser: User
+    beforeEach(async () => {
+      linkedIn.getAccessToken = stub().returns({ token: 'token' })
+      linkedIn.getUserProfile = stub().returns(linkedInUserProfile)
+      gateway.findLinkedInUser = stub().returns(user)
+      foundUser = await core.execute(SignInWithLinkedIn(''))
+    })
+    it('calls gateway with LinkedIn user ID', () => {
+      expect(gateway.findLinkedInUser).to.have.been.calledOnceWithExactly(
+        linkedInUserProfile.id
+      )
+    })
+    it('returns user profile', () => {
+      expect(foundUser).to.deep.equal(user)
     })
   })
 })
