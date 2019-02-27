@@ -21,6 +21,7 @@
     "@types/node": "11.9.4",
     "@types/react": "16.8.4",
     "@types/react-dom": "16.8.2",
+    "history": "4.7.2",
     "immutable-lens": "^0.4.2",
     "lenrix": "^0.6.2",
     "observable-tree-router": "0.0.17",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/history": "4.7.2",
     "@types/mocha": "5.2.6",
     "@types/sinon": "7.0.6",
     "@types/sinon-chai": "^3.2.2",
