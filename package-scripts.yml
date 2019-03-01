@@ -1,5 +1,5 @@
 scripts:
-  postinstall: nps install.client install.server
+  postinstall: nps install.client install.server build prune
   install:
     client: cd client && npm install
     server:
@@ -15,5 +15,5 @@ scripts:
     server: cd server && npm run build
   prune:
     default: nps prune.client prune.server install.server.production
-    client: rm -r client/node_modules
-    server: rm -r server/node_modules
+    client: rm -rf client/node_modules
+    server: rm -rf server/node_modules

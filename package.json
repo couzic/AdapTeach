@@ -5,7 +5,6 @@
   "scripts": {
     "deploy": "git push heroku master",
     "postinstall": "nps postinstall",
-    "heroku-postbuild": "nps build prune",
     "start": "node server/build/index.js",
     "db": "heroku addons:open graphenedb"
   },
@@ -20,7 +19,7 @@
   },
   "homepage": "https://github.com/couzic/AdapTeach#readme",
   "engines": {
-    "node": "10.x"
+    "node": "10.15.1"
   },
   "devDependencies": {
     "nps": "5.9.3",
