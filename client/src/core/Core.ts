@@ -1,15 +1,17 @@
-import { History } from 'history'
-
-import { createRouter } from './Router'
-
-export interface CoreDependencies {
-  history: History
-}
+import { createAuthStore } from '../auth/AuthStore'
+import { CoreDependencies } from './dependencies/CoreDependencies'
+import { createRootStore } from './RootStore'
 
 export const createCore = (dependencies: CoreDependencies) => {
-  const { history } = dependencies
-  const router = createRouter(history)
-  return { router }
+  const { router } = dependencies
+  const rootStore = createRootStore()
+  return {
+    router,
+    auth: {
+      providers: dependencies.authProviders,
+      store: createAuthStore(rootStore, dependencies)
+    }
+  }
 }
 
 export type Core = ReturnType<typeof createCore>

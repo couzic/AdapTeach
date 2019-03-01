@@ -56,8 +56,8 @@ if (process.env.NODE_ENV !== 'production') {
           ' - ' +
           ctx.request.url
       )
-      console.error(error)
-      ctx.throw('Internal Server Error', 500)
+      // console.error(error)
+      ctx.throw(500, 'Internal Server Error')
     }
   })
 }
@@ -68,7 +68,7 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(
   bodyParser({
     onerror: function(err, ctx) {
-      ctx.throw('body parse error', 422)
+      ctx.throw(422, 'body parse error')
     }
   })
 )

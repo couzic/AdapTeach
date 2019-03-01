@@ -13,7 +13,7 @@ export const createRouter = (history: History) =>
           path: '/linkedin',
           nested: {
             callback: route({
-              path: 'callback',
+              path: '/callback?code',
               params: ['code']
             })
           }
@@ -21,3 +21,5 @@ export const createRouter = (history: History) =>
       }
     })
   })
+
+export type Router = ReturnType<typeof createRouter>

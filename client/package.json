@@ -5,8 +5,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "eject": "react-scripts eject",
-    "test": "cross-env NODE_ENV=test mocha --opts mocha.opts",
-    "tdd": "npm test -- --watch"
+    "test": "cross-env NODE_ENV=test ts-mocha -p tsconfig.mocha.json --reporter dot src/**/*.test.ts",
+    "tdd": "npm test -- -watch --watch-extensions ts"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -18,31 +18,35 @@
     "not op_mini all"
   ],
   "dependencies": {
-    "@types/node": "11.9.4",
-    "@types/react": "16.8.4",
+    "@types/node": "11.9.5",
+    "@types/react": "16.8.5",
     "@types/react-dom": "16.8.2",
     "history": "4.7.2",
     "immutable-lens": "^0.4.2",
     "lenrix": "^0.6.2",
-    "observable-tree-router": "0.0.17",
-    "react": "16.8.2",
-    "react-dom": "16.8.2",
+    "observable-tree-router": "0.0.18",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
     "react-scripts": "2.1.5",
+    "recompose": "0.30.0",
+    "redux": "4.0.1",
     "rxjs": "^6.4.0",
+    "rxjs-hooks": "0.4.0",
     "sequency": "^0.19.2",
-    "typescript": "3.3.3"
+    "typescript": "3.3.3333"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
     "@types/history": "4.7.2",
     "@types/mocha": "5.2.6",
-    "@types/sinon": "7.0.6",
+    "@types/recompose": "0.30.5",
+    "@types/sinon": "7.0.8",
     "@types/sinon-chai": "^3.2.2",
     "chai": "^4.2.0",
     "cross-env": "^5.2.0",
-    "mocha": "^5.2.0",
-    "sinon": "7.2.4",
+    "mocha": "6.0.2",
+    "sinon": "7.2.5",
     "sinon-chai": "^3.3.0",
-    "ts-node": "^8.0.2"
+    "ts-mocha": "6.0.0"
   }
 }

@@ -1,22 +1,17 @@
 import './App.css'
 
-import React, { Component } from 'react'
+import React from 'react'
 
-import logo from './logo.svg'
-import signinButton from './signin-button.png'
+import { SignInWithLinkedInButton } from './auth/SignInWithLinkedInButton'
+import logo from './logo.png'
 
-class App extends Component {
+class App extends React.Component {
   render() {
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a href="/auth/linkedin/signin">
-            <img src={signinButton} alt="Sign in with LinkedIn" />
-          </a>
+          <SignInWithLinkedInButton />
         </header>
       </div>
     )
