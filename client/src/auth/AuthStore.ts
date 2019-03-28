@@ -16,14 +16,14 @@ export const createAuthStore = (
     .actionTypes<{
       enteredLinkedInCallback: { code: string }
       receivedToken: { jwt: JWT; user: User }
-      setSignedInUser: User
+      userSignedIn: User
     }>()
     .pureEpics({
       enteredLinkedInCallback: pipe(
         switchMap(({ code }) => authEndpoint.fetchLinkedInToken(code)),
         map(result => ({ receivedToken: result }))
       ),
-      receivedToken: map(({ user }) => ({ setSignedInUser: user })) // This is to make sure JWT is stored before any reaction to user change is triggered
+      receivedToken: map(({ user }) => ({ userSignedIn: user })) // This is to make sure JWT is stored before any reaction to user change is triggered
     })
     .sideEffects({
       receivedToken: ({ jwt }) => {
@@ -31,10 +31,10 @@ export const createAuthStore = (
       }
     })
     .updates(_ => ({
-      setSignedInUser: _.focusPath('signedInUser').setValue()
+      userSignedIn: _.focusPath('signedInUser').setValue()
     }))
     .sideEffects({
-      setSignedInUser: () => router.home.push()
+      userSignedIn: () => router.home.push()
     })
 
   onLoad(() => {

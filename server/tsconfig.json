@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
     "noImplicitAny": false, // TODO Remove
+    "strict": true,
     "target": "esnext",
     "lib": ["esnext"],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
     "module": "commonjs",
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "outDir": "build"
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["**/*.test.ts", "**/*.scenario.ts"]
+  "include": ["src/**/*.ts", "../client/src/@shared/**/*.ts"],
+  "exclude": ["**/*.test.ts", "src/acceptance/**/*.ts"]
 }

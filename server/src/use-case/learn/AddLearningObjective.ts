@@ -1,9 +1,9 @@
+import { UserId } from '../../../../client/src/@shared/User'
 import { CoreDependencies } from '../../core/Core'
 import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
-import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { NodeType } from '../../neo4j/NodeType'
-import { RelType } from '../../neo4j/RelType';
+import { RelType } from '../../neo4j/RelType'
 
 export interface AddLearningObjectiveGateway {
   addLearningObjective: (

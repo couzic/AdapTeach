@@ -1,19 +1,31 @@
 scripts:
-  postinstall: nps install.client install.server build prune
-  install:
-    client: cd client && npm install
-    server:
-      default: cd server && npm install
-      production: cd server && npm install --production
-  clean:
-    default: nps clean.client clean.server
-    client: rm -rf client/build
-    server: rm -rf server/build
+  postinstall: nps client.install server.install
+  test: nps client.test server.test
   build:
-    default: nps clean build.client build.server
-    client: cd client && npm run build
-    server: cd server && npm run build
-  prune:
-    default: nps prune.client prune.server install.server.production
+    default: nps build.clean server.build client.build build.install
+    clean: rm -rf build && mkdir build
+    install: cd build && npm install --production
+  prune: # Just an optimization: removes useless files in production
+    default: nps prune.client prune.server
     client: rm -rf client/node_modules
     server: rm -rf server/node_modules
+  start: node build/server/src/index.js
+  deploy: git push heroku master
+  local:
+    default: NODE_ENV=local nps build local.copy-env start
+    copy-env: cp -r server/env/ build/server/
+  client:
+    default: nps client.dev
+    install: cd client && npm install
+    dev: cd client && npm start
+    build: cd client && npm run build && mv build ../build/static
+    test: cd client && npm test
+    tdd: cd client && npm run tdd
+  server:
+    default: nps server.dev
+    install: cd server && npm install
+    dev: cd server && npm run dev
+    build: cd server && npm run build && mv build/* ../build && rm -r build
+    test: cd server && npm test
+    tdd: cd server && npm run tdd
+    atdd: cd server && npm run atdd

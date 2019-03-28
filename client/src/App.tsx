@@ -2,17 +2,17 @@ import './App.css'
 
 import React from 'react'
 
-import { SignInWithLinkedInButton } from './auth/SignInWithLinkedInButton'
-import logo from './logo.png'
+import { LinkedInCallbackPage } from './pages/auth/linkedin/callback/LinkedInCallbackPage'
+import { HomePage } from './pages/home/HomePage'
+
+const style: React.CSSProperties = {}
 
 class App extends React.Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <SignInWithLinkedInButton />
-        </header>
+      <div style={style}>
+        <HomePage />
+        <LinkedInCallbackPage />
       </div>
     )
   }

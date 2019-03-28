@@ -1,6 +1,6 @@
+import { UserId } from '../../../../client/src/@shared/User'
 import { UseCaseDependencies } from '../../core/Core'
 import { Assessment } from '../../domain/Assessment'
-import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 
 export interface FindNextAssessmentGateway {

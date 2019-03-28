@@ -1,12 +1,12 @@
 import { asSequence } from 'sequency'
 
+import { UserId } from '../../../../client/src/@shared/User'
 import { CoreDependencies } from '../../core/Core'
 import { Schedule } from '../../core/ports/RepetitionScheduler'
 import { Assessment, AssessmentId } from '../../domain/Assessment'
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
 import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
 import { McqId } from '../../domain/Mcq'
-import { UserId } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 
 export interface CheckAnswerGateway {

@@ -1,5 +1,5 @@
+import { User } from '../../../../../client/src/@shared/User'
 import { UseCaseDependencies } from '../../../core/Core'
-import { User } from '../../../domain/User'
 
 export const SignInWithLinkedIn = (authorizationCode: string) => async ({
   gateway,

@@ -14,5 +14,11 @@ export const createProductionDependencies = (): CoreDependencies => {
   const authEndpoint = createAuthEndpoint(http)
   const authProviders = createAuthProviders()
   const jwtStorage = new JwtStorage()
-  return { router, authEndpoint, authProviders, jwtStorage }
+  return {
+    router,
+    authEndpoint,
+    authProviders,
+    jwtStorage,
+    assessmentEndpoint: {} as any
+  }
 }

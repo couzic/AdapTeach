@@ -4,6 +4,7 @@ import chai from 'chai'
 import { stub } from 'sinon'
 import sinonChai from 'sinon-chai'
 
+import { User } from '../../../../../client/src/@shared/User'
 import { Core, CoreDependencies, createCore } from '../../../core/Core'
 import { CoreGateway } from '../../../core/CoreGateway'
 import { IdFactory } from '../../../core/ports/IdFactory'
@@ -11,7 +12,6 @@ import {
   LinkedInGateway,
   LinkedInUserProfile
 } from '../../../core/ports/LinkedInGateway'
-import { User } from '../../../domain/User'
 import { SignInWithLinkedIn } from './SignInWithLinkedIn'
 
 chai.use(sinonChai)

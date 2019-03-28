@@ -2,8 +2,8 @@ import { UseCaseDependencies } from '../../../core/Core'
 import { Assessment, AssessmentId } from '../../../domain/Assessment'
 import { KnowledgeCompositeId } from '../../../domain/KnowledgeComposite'
 import { cypher } from '../../../neo4j/cypher'
-import { NodeType } from '../../../neo4j/NodeType';
-import { RelType } from '../../../neo4j/RelType';
+import { NodeType } from '../../../neo4j/NodeType'
+import { RelType } from '../../../neo4j/RelType'
 
 export interface AddPrerequisiteGateway {
   addPrerequisite: (

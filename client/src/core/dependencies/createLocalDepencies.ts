@@ -31,5 +31,11 @@ export const createLocalDependencies = (): CoreDependencies => {
     }
   }
   const jwtStorage = new JwtStorage()
-  return { router, authEndpoint, authProviders, jwtStorage }
+  return {
+    router,
+    authEndpoint,
+    authProviders,
+    jwtStorage,
+    assessmentEndpoint: {} as any
+  }
 }

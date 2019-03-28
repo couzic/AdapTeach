@@ -3,9 +3,14 @@
   "version": "0.0.1",
   "description": "Adaptive learning for Each and everyone of us",
   "scripts": {
-    "deploy": "git push heroku master",
     "postinstall": "nps postinstall",
-    "start": "node server/build/index.js",
+    "test": "nps test",
+    "build": "nps build prune",
+    "start": "nps start",
+    "deploy": "nps deploy",
+    "client": "nps client",
+    "server": "nps server",
+    "local": "nps local",
     "db": "heroku addons:open graphenedb"
   },
   "repository": {
@@ -13,7 +18,7 @@
     "url": "git+https://github.com/couzic/AdapTeach.git"
   },
   "author": "Mikael Couzic",
-  "license": "GPLv3",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/couzic/AdapTeach/issues"
   },
@@ -21,9 +26,11 @@
   "engines": {
     "node": "10.15.1"
   },
-  "devDependencies": {
+  "dependencies": {
     "nps": "5.9.3",
-    "nps-utils": "1.7.0",
+    "nps-utils": "1.7.0"
+  },
+  "devDependencies": {
     "tslint": "5.12.1",
     "typescript": "3.3.3333"
   }

@@ -1,5 +1,5 @@
+import { UserFields } from '../../../../client/src/@shared/User'
 import { UseCaseDependencies } from '../../core/Core'
-import { UserFields } from '../../domain/User'
 
 export const CreateUser = (fields: UserFields) => async ({
   gateway,

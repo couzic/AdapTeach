@@ -1,5 +1,5 @@
+import { User } from '../../../../client/src/@shared/User'
 import { LinkedInUserId } from '../../core/ports/LinkedInGateway'
-import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { NodeType } from '../../neo4j/NodeType'
 

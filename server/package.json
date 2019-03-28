@@ -2,7 +2,7 @@
   "name": "adapteach-server",
   "private": true,
   "scripts": {
-    "local": "cross-env NODE_ENV=local ts-node-dev src/index.ts",
+    "dev": "cross-env NODE_ENV=dev ts-node-dev src/index.ts",
     "test": "cross-env NODE_ENV=test mocha --opts mocha.opts",
     "tdd": "npm test -- --watch",
     "test-acceptance": "cross-env NODE_ENV=test mocha --opts mocha.acceptance.opts",
@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@koa/cors": "2.2.3",
-    "@types/koa-static": "4.0.1",
     "axios": "0.18.0",
     "date-fns": "1.30.1",
     "jsonwebtoken": "8.5.0",
@@ -34,6 +33,7 @@
     "@types/koa": "2.0.48",
     "@types/koa-bodyparser": "4.2.2",
     "@types/koa-router": "7.0.39",
+    "@types/koa-static": "4.0.1",
     "@types/koa__cors": "2.2.3",
     "@types/mocha": "5.2.6",
     "@types/sinon": "7.0.6",
@@ -46,6 +46,7 @@
     "sinon": "7.2.4",
     "sinon-chai": "^3.3.0",
     "ts-node": "^8.0.2",
-    "ts-node-dev": "1.0.0-pre.32"
+    "ts-node-dev": "1.0.0-pre.32",
+    "typescript": "3.3.4000"
   }
 }
