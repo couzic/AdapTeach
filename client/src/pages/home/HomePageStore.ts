@@ -1,7 +1,7 @@
 import { onLoad } from 'lenrix'
 import { filter, map } from 'rxjs/operators'
 
-import { CoreDependencies } from '../../core/dependencies/CoreDependencies'
+import { CoreDependencies } from '../../core/CoreDependencies'
 import { RootStore } from '../../core/RootStore'
 
 export const createHomePageStore = (

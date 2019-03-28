@@ -1,6 +1,6 @@
-import { createAuthStore } from '../auth/AuthStore'
 import { createHomePageStore } from '../pages/home/HomePageStore'
-import { CoreDependencies } from './dependencies/CoreDependencies'
+import { createAuthStore } from './auth/AuthStore'
+import { CoreDependencies } from './CoreDependencies'
 import { createRootStore } from './RootStore'
 
 export const createCore = (dependencies: CoreDependencies) => {

@@ -2,8 +2,8 @@ import React from 'react'
 import { useObservable } from 'rxjs-hooks'
 import { map } from 'rxjs/operators'
 
-import { core } from '../core'
-import imageSrc from './SignInWithLinkedInButton.png'
+import { core } from '../../core'
+import imageSrc from '../../assets/img/SignInWithLinkedInButton.png'
 
 export const SignInWithLinkedInButton: React.FC = () => {
   const alreadySignedIn = useObservable(() =>

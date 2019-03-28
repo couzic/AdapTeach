@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { SignInWithLinkedInButton } from '../../auth/SignInWithLinkedInButton'
+import { SignInWithLinkedInButton } from './SignInWithLinkedInButton'
 import { CenteredCard } from '../../components/CenteredCard'
 import logo from '../../logo.png'
 

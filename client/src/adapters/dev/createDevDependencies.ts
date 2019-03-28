@@ -2,14 +2,14 @@ import { createBrowserHistory } from 'history'
 import { of } from 'rxjs'
 import { delay } from 'rxjs/operators'
 
-import { AuthEndpoint } from '../../auth/AuthEndpoint'
-import { AuthProviders } from '../../auth/AuthProviders'
-import { JWT } from '../../auth/JWT'
-import { JwtStorage } from '../../auth/JwtStorage'
-import { User } from '../domain/User'
-import { createRouter } from '../Router'
-import { CoreDependencies } from './CoreDependencies'
-import { createHttp } from './http/Http'
+import { AuthProviders } from '../../core/auth/AuthProviders'
+import { JWT } from '../../core/auth/JWT'
+import { JwtStorage } from '../../core/auth/JwtStorage'
+import { CoreDependencies } from '../../core/CoreDependencies'
+import { User } from '../../core/domain/User'
+import { AuthEndpoint } from '../../core/ports/AuthEndpoint'
+import { createRouter } from '../../core/Router'
+import { createDevAssessmentEndpoint } from './createDevAssessmentEndpoint'
 
 const localUser: User = {
   id: 'UserId',
@@ -17,10 +17,9 @@ const localUser: User = {
   lastName: 'Couzic'
 }
 
-export const createLocalDependencies = (): CoreDependencies => {
+export const createDevDependencies = (): CoreDependencies => {
   const history = createBrowserHistory()
   const router = createRouter(history)
-  const http = createHttp()
   const authEndpoint: AuthEndpoint = {
     fetchLinkedInToken: () =>
       of({ jwt: 'JWT' as JWT, user: localUser }).pipe(delay(500))
@@ -31,11 +30,12 @@ export const createLocalDependencies = (): CoreDependencies => {
     }
   }
   const jwtStorage = new JwtStorage()
+  const assessmentEndpoint = createDevAssessmentEndpoint()
   return {
     router,
     authEndpoint,
     authProviders,
     jwtStorage,
-    assessmentEndpoint: {} as any
+    assessmentEndpoint
   }
 }

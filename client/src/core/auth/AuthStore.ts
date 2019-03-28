@@ -2,9 +2,9 @@ import { onLoad } from 'lenrix'
 import { pipe } from 'rxjs'
 import { filter, map, switchMap } from 'rxjs/operators'
 
-import { CoreDependencies } from '../core/dependencies/CoreDependencies'
-import { User } from '../core/domain/User'
-import { RootStore } from '../core/RootStore'
+import { CoreDependencies } from '../CoreDependencies'
+import { User } from '../domain/User'
+import { RootStore } from '../RootStore'
 import { JWT } from './JWT'
 
 export const createAuthStore = (
