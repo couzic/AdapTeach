@@ -102,15 +102,17 @@ app.use(router.routes())
 /////////////
 // STATIC //
 ///////////
-app.use(serveStatic(path.resolve(__dirname, '../../client/build')))
-// Default to index.html
-const indexHtml = readFileSync(
-  path.resolve(__dirname, '../../client/build/index.html')
-)
-app.use(async ctx => {
-  ctx.set('Content-Type', 'text/html')
-  ctx.body = indexHtml
-})
+if (process.env.NODE_ENV !== 'development') {
+  app.use(serveStatic(path.resolve(__dirname, '../../client/build')))
+  // Default to index.html
+  const indexHtml = readFileSync(
+    path.resolve(__dirname, '../../client/build/index.html')
+  )
+  app.use(async ctx => {
+    ctx.set('Content-Type', 'text/html')
+    ctx.body = indexHtml
+  })
+}
 
 ////////////
 // START //

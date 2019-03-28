@@ -2,7 +2,7 @@
   "name": "adapteach-server",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev ts-node-dev src/index.ts",
+    "dev": "cross-env NODE_ENV=development ts-node-dev src/index.ts",
     "test": "cross-env NODE_ENV=test mocha --opts mocha.opts",
     "tdd": "npm test -- --watch",
     "test-acceptance": "cross-env NODE_ENV=test mocha --opts mocha.acceptance.opts",
