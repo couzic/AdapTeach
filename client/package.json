@@ -1,51 +1,39 @@
 {
-  "name": "adapteach-client",
+  "name": "client",
+  "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "@testing-library/jest-dom": "4.2.4",
+    "@testing-library/react": "9.3.3",
+    "@testing-library/user-event": "7.1.2",
+    "@types/jest": "24.0.23",
+    "@types/node": "12.12.17",
+    "@types/react": "16.9.16",
+    "@types/react-dom": "16.9.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.3.0",
+    "typescript": "3.7.3"
+  },
   "scripts": {
-    "dev": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "cross-env NODE_ENV=test TS_NODE_PROJECT=tsconfig.mocha.json mocha src/**/*.test.ts --require ts-node/register --reporter dot",
-    "tdd": "npm test -- -watch --watch-extensions ts"
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "dependencies": {
-    "@types/node": "12.0.0",
-    "@types/react": "16.8.17",
-    "@types/react-dom": "16.8.4",
-    "history": "4.9.0",
-    "immutable-lens": "^0.4.2",
-    "lenrix": "0.8.5",
-    "observable-tree-router": "0.0.18",
-    "react": "16.8.6",
-    "react-dom": "16.8.6",
-    "react-scripts": "3.0.1",
-    "recompose": "0.30.0",
-    "redux": "4.0.1",
-    "rxjs": "6.5.2",
-    "rxjs-hooks": "0.4.3",
-    "sequency": "^0.19.2",
-    "typescript": "3.4.5"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.1.7",
-    "@types/history": "4.7.2",
-    "@types/mocha": "5.2.6",
-    "@types/recompose": "0.30.6",
-    "@types/sinon": "7.0.11",
-    "@types/sinon-chai": "^3.2.2",
-    "chai": "^4.2.0",
-    "cross-env": "^5.2.0",
-    "mocha": "6.1.4",
-    "sinon": "7.3.2",
-    "sinon-chai": "^3.3.0",
-    "ts-node": "8.1.0"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
