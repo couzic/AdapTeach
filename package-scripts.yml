@@ -29,6 +29,7 @@ scripts:
     test: cd server && npm test
     tdd: cd server && npm run tdd
     atdd: cd server && npm run atdd
+  db: heroku addons:open graphenedb
   check:
     default: nps check.root check.client check.server
     root: npm-check -u

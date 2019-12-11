@@ -11,7 +11,7 @@
     "client": "nps client",
     "server": "nps server",
     "local": "nps local",
-    "db": "heroku addons:open graphenedb"
+    "db": "nps db"
   },
   "repository": {
     "type": "git",
