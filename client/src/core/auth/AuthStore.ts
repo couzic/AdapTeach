@@ -1,6 +1,5 @@
-import { onLoad } from 'lenrix'
 import { pipe } from 'rxjs'
-import { filter, map, switchMap } from 'rxjs/operators'
+import { map, switchMap } from 'rxjs/operators'
 
 import { CoreDependencies } from '../CoreDependencies'
 import { User } from '../domain/User'
@@ -36,15 +35,6 @@ export const createAuthStore = (
     .sideEffects({
       userSignedIn: () => router.home.push()
     })
-
-  onLoad(() => {
-    router.auth.linkedin.callback.match$
-      .pipe(
-        filter(match => !!match && match.exact),
-        map(match => match!.params.code)
-      )
-      .subscribe(code => store.dispatch({ enteredLinkedInCallback: { code } }))
-  })
 
   return store
 }

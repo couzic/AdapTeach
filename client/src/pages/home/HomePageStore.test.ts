@@ -2,7 +2,7 @@ import 'mocha'
 
 import chai from 'chai'
 import { Subject } from 'rxjs'
-import { stub } from 'sinon'
+import { stub, SinonStub } from 'sinon'
 import sinonChai from 'sinon-chai'
 
 import { Core, createCore } from '../../core/Core'
@@ -20,6 +20,9 @@ describe('HomePageStore', () => {
   let core: Core
   let store: HomePageStore
   let fetchedNextAssessment$: Subject<Assessment | null>
+  const resetHistory = () => {
+    ;(assessmentEndpoint.fetchNextAssessment as SinonStub).resetHistory()
+  }
   beforeEach(() => {
     fetchedNextAssessment$ = new Subject()
     assessmentEndpoint = {
@@ -41,6 +44,7 @@ describe('HomePageStore', () => {
     describe('when entered', () => {
       const nextAssessment: Assessment = {} as any
       beforeEach(() => {
+        resetHistory()
         core.router.home.push()
         fetchedNextAssessment$.next(nextAssessment)
       })

@@ -27,11 +27,11 @@
     "node": "10.15.1"
   },
   "dependencies": {
-    "nps": "5.9.3",
+    "nps": "5.9.5",
     "nps-utils": "1.7.0"
   },
   "devDependencies": {
-    "tslint": "5.12.1",
-    "typescript": "3.3.3333"
+    "tslint": "5.16.0",
+    "typescript": "3.4.5"
   }
 }

@@ -1,26 +1,33 @@
-import { onLoad } from 'lenrix'
-import { filter, map } from 'rxjs/operators'
+import { pipe } from 'rxjs'
+import { filter, map, switchMap } from 'rxjs/operators'
 
 import { CoreDependencies } from '../../core/CoreDependencies'
+import { Assessment } from '../../core/domain/Assessment'
 import { RootStore } from '../../core/RootStore'
 
 export const createHomePageStore = (
   rootStore: RootStore,
-  dependencies: CoreDependencies
+  { assessmentEndpoint }: CoreDependencies
 ) => {
   const store = rootStore
-  onLoad(() => {
-    const enteredHome$ = dependencies.router.home.match$.pipe(
-      filter(match => match !== null && match.exact)
-    )
-    const enteredHomeWhileSignedIn = enteredHome$.pipe(
-      map(() => rootStore.currentState.signedInUser),
-      filter(signedInUser => signedInUser !== undefined)
-    )
-    enteredHomeWhileSignedIn.subscribe(signedInUser =>
-      dependencies.assessmentEndpoint.fetchNextAssessment(signedInUser!.id)
-    )
-  })
+    .actionTypes<{
+      enteredHome: void
+      receivedNextAssessment: Assessment | null
+    }>()
+    .pureEpics({
+      enteredHome: pipe(
+        map(() => rootStore.currentState.signedInUser),
+        filter(user => user !== undefined),
+        switchMap(user => assessmentEndpoint.fetchNextAssessment(user!.id)),
+        map(assessment => ({ receivedNextAssessment: assessment }))
+      )
+    })
+    .updates(_ => ({
+      receivedNextAssessment: _.focusPath('nextAssessment').setValue()
+    }))
+    .computeFromField('signedInUser', user => ({
+      alreadySignedIn: user !== undefined
+    }))
 
   return store
 }

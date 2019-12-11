@@ -3,7 +3,7 @@ import { User } from './domain/User'
 
 export interface RootState {
   signedInUser?: User
-  nextAssessment?: Assessment
+  nextAssessment?: Assessment | null
 }
 
 export const initialRootState: RootState = {}
