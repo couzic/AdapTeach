@@ -1,6 +1,5 @@
 {
-  "name": "client",
-  "version": "0.1.0",
+  "name": "adapteach-client",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "4.2.4",
@@ -16,6 +15,7 @@
     "typescript": "3.7.3"
   },
   "scripts": {
+    "dev": "npm start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
