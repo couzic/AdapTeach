@@ -3,8 +3,6 @@ import { map } from 'rxjs/operators'
 
 import { Http } from '../../core/ports/Http'
 
-const postHeaders = {}
-
 export const createHttp = (): Http => {
   return {
     get: url => ajax.getJSON(url),

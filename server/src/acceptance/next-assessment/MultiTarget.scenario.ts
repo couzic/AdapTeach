@@ -1,3 +1,5 @@
+import 'mocha'
+
 import chai from 'chai'
 import { stub } from 'sinon'
 import sinonChai from 'sinon-chai'
@@ -150,7 +152,10 @@ describe('Multi-target scenario', () => {
               {
                 id: singleTargetAssessment,
                 assessedComponents: [kc.id],
-                history: [{ passed: true, time: 2 }, { passed: true, time: 0 }]
+                history: [
+                  { passed: true, time: 2 },
+                  { passed: true, time: 0 }
+                ]
               }
             ]
           })

@@ -1,13 +1,13 @@
-const neo4j = require('neo4j-driver').v1
+import neo4j from 'neo4j-driver'
 
 const url = 'bolt://localhost'
 
 let driver: any
 
 if (process.env.NODE_ENV === 'production') {
-  const graphenedbURL = process.env.GRAPHENEDB_BOLT_URL
-  const graphenedbUser = process.env.GRAPHENEDB_BOLT_USER
-  const graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD
+  const graphenedbURL = process.env.GRAPHENEDB_BOLT_URL!
+  const graphenedbUser = process.env.GRAPHENEDB_BOLT_USER!
+  const graphenedbPass = process.env.GRAPHENEDB_BOLT_PASSWORD!
   driver = neo4j.driver(
     graphenedbURL,
     neo4j.auth.basic(graphenedbUser, graphenedbPass)

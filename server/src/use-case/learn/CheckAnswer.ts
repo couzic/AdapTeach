@@ -1,3 +1,4 @@
+import neo4j from 'neo4j-driver'
 import { asSequence } from 'sequency'
 
 import { UserId } from '../../../../client/src/@shared/User'
@@ -69,8 +70,6 @@ export const CheckAnswer = (
   }
   return Promise.resolve(passed)
 }
-
-const neo4j = require('neo4j-driver').v1
 
 export const createCheckAnswerGateway = (): CheckAnswerGateway => ({
   getAssessment: async (userId, assessmentId) => {
