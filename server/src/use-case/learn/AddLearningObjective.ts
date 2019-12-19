@@ -1,6 +1,6 @@
 import { UserId } from '../../../../client/src/@shared/User'
 import { CoreDependencies } from '../../core/Core'
-import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
+import { LearningObjectiveId } from '../../domain/LearningObjective'
 import { cypher } from '../../neo4j/cypher'
 import { NodeType } from '../../neo4j/NodeType'
 import { RelType } from '../../neo4j/RelType'
@@ -8,13 +8,13 @@ import { RelType } from '../../neo4j/RelType'
 export interface AddLearningObjectiveGateway {
   addLearningObjective: (
     userId: UserId,
-    objectiveId: KnowledgeCompositeId
+    objectiveId: LearningObjectiveId
   ) => Promise<void>
 }
 
 export const AddLearningObjective = (
   userId: UserId,
-  objectiveId: KnowledgeCompositeId
+  objectiveId: LearningObjectiveId
 ) => async ({ gateway }: CoreDependencies) => {
   await gateway.addLearningObjective(userId, objectiveId)
 }

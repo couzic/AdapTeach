@@ -28,6 +28,7 @@ scripts:
     build: cd server && npm run build && mv build/* ../build && rm -r build
     test: cd server && npm test
     tdd: cd server && npm run tdd
+    at: cd server && npm run at
     atdd: cd server && npm run atdd
   check:
     default: nps check.root check.client check.server

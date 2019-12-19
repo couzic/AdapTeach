@@ -1,9 +1,9 @@
 import { UseCaseDependencies } from '../../../core/Core'
 import {
   KnowledgeComponent,
-  KnowledgeComponentFields,
-  KnowledgeComponentId
+  KnowledgeComponentFields
 } from '../../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
 import { NodeType } from '../../../neo4j/NodeType'
 

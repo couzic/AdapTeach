@@ -1,12 +1,11 @@
-import { KnowledgeComponentId } from './KnowledgeComponent'
-import { KnowledgeCompositeId } from './KnowledgeComposite'
+import { KnowledgeComponentId, LearningObjectiveId } from './LearningObjective'
 
 export interface AssessmentBase<Fields extends { id: string; type: string }> {
   id: Fields['id']
   type: Fields['type']
   active: boolean
-  prerequisites: KnowledgeCompositeId[]
+  prerequisites: LearningObjectiveId[]
   assessedComponents: KnowledgeComponentId[]
-  activelyRecalledItems: KnowledgeComponentId[]
-  passivelyRecalledItems: KnowledgeComponentId[]
+  activelyRecalledComponents: KnowledgeComponentId[]
+  passivelyRecalledComponents: KnowledgeComponentId[]
 }

@@ -1,10 +1,11 @@
-export type KnowledgeComponentId = 'KnowledgeComponentId'
+import {
+  KnowledgeComponentId,
+  LearningObjective,
+  LearningObjectiveFields
+} from './LearningObjective'
 
-export interface KnowledgeComponentFields {
-  name: string
-  description?: string
-}
+export type KnowledgeComponentFields = LearningObjectiveFields
 
-export interface KnowledgeComponent extends KnowledgeComponentFields {
+export interface KnowledgeComponent extends LearningObjective {
   id: KnowledgeComponentId
 }

@@ -1,6 +1,11 @@
-import { KnowledgeComponent, KnowledgeComponentId } from './KnowledgeComponent'
-import { LearningObjective, LearningObjectiveId } from './LearningObjective'
+import {
+  KnowledgeCompositeId,
+  LearningObjective,
+  LearningObjectiveFields
+} from './LearningObjective'
 
-export type KnowledgeCompositeId = KnowledgeComponentId | LearningObjectiveId
+export type KnowledgeCompositeFields = LearningObjectiveFields
 
-export type KnowledgeComposite = KnowledgeComponent | LearningObjective
+export interface KnowledgeComposite extends LearningObjective {
+  id: KnowledgeCompositeId
+}

@@ -5,7 +5,7 @@ import { CoreDependencies } from '../../core/Core'
 import { Schedule } from '../../core/ports/RepetitionScheduler'
 import { Assessment, AssessmentId } from '../../domain/Assessment'
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../domain/LearningObjective'
 import { McqId } from '../../domain/Mcq'
 import { cypher } from '../../neo4j/cypher'
 

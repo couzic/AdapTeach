@@ -1,6 +1,6 @@
 import { UseCaseDependencies } from '../../../core/Core'
 import { Assessment, AssessmentId } from '../../../domain/Assessment'
-import { KnowledgeCompositeId } from '../../../domain/KnowledgeComposite'
+import { LearningObjectiveId } from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
 import { NodeType } from '../../../neo4j/NodeType'
 import { RelType } from '../../../neo4j/RelType'
@@ -8,13 +8,13 @@ import { RelType } from '../../../neo4j/RelType'
 export interface AddPrerequisiteGateway {
   addPrerequisite: (
     assessmentId: AssessmentId,
-    prerequisiteId: KnowledgeCompositeId
+    prerequisiteId: LearningObjectiveId
   ) => Promise<Assessment>
 }
 
 export const AddPrerequisite = (
   assesmentId: AssessmentId,
-  prerequisiteId: KnowledgeCompositeId
+  prerequisiteId: LearningObjectiveId
 ) => ({ gateway }: UseCaseDependencies) =>
   gateway.addPrerequisite(assesmentId, prerequisiteId)
 

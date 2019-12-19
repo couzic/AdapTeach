@@ -1,6 +1,8 @@
 import { Core } from '../../core/Core'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
-import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
+import {
+  KnowledgeComponentId,
+  LearningObjectiveId
+} from '../../domain/LearningObjective'
 import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment'
 import { AddAssessedComponent } from '../../use-case/contribute/assessment/AddAssessedComponent'
 import { AddPrerequisite } from '../../use-case/contribute/assessment/AddPrerequisite'
@@ -12,7 +14,7 @@ export const createMcqFactory = (core: Core) => async (
   name: string,
   items: KnowledgeComponentId[],
   options?: {
-    prerequisites?: KnowledgeCompositeId[]
+    prerequisites?: LearningObjectiveId[]
   }
 ) => {
   const { id: assessmentId } = await core.execute(

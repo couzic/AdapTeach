@@ -1,20 +1,22 @@
 import { UseCaseDependencies } from '../../../core/Core'
-import { LearningObjective, LearningObjectiveId } from '../../../domain/LearningObjective'
-import { KnowledgeCompositeId } from '../../../domain/KnowledgeComposite'
+import {
+  LearningObjective,
+  LearningObjectiveId
+} from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
-import { NodeType } from '../../../neo4j/NodeType';
-import { RelType } from '../../../neo4j/RelType';
+import { NodeType } from '../../../neo4j/NodeType'
+import { RelType } from '../../../neo4j/RelType'
 
 export interface AddToObjectiveGateway {
   addToObjective: (
     objectiveId: LearningObjectiveId,
-    childId: KnowledgeCompositeId
+    childId: LearningObjectiveId
   ) => Promise<LearningObjective>
 }
 
 export const AddToObjective = (
   objectiveId: LearningObjectiveId,
-  childId: KnowledgeCompositeId
+  childId: LearningObjectiveId
 ) => async ({ gateway }: UseCaseDependencies) =>
   gateway.addToObjective(objectiveId, childId)
 

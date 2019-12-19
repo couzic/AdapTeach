@@ -1,4 +1,7 @@
-export type LearningObjectiveId = 'LearningObjectiveId'
+export type KnowledgeComponentId = 'KnowledgeComponentId'
+export type KnowledgeCompositeId = 'KnowledgeCompositeId'
+
+export type LearningObjectiveId = KnowledgeComponentId | KnowledgeCompositeId
 
 export interface LearningObjectiveFields {
   name: string

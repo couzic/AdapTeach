@@ -1,11 +1,11 @@
 import { Core } from '../../core/Core'
-import { KnowledgeCompositeId } from '../../domain/KnowledgeComposite'
+import { LearningObjectiveId } from '../../domain/LearningObjective'
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 
 export const createObjectiveFactory = (core: Core) => async (
   name: string,
-  components?: KnowledgeCompositeId[]
+  components?: LearningObjectiveId[]
 ) => {
   const composite = await core.execute(CreateLearningObjective({ name }))
   if (components) {

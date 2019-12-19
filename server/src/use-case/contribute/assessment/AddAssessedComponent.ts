@@ -1,6 +1,6 @@
 import { UseCaseDependencies } from '../../../core/Core'
 import { Assessment, AssessmentId } from '../../../domain/Assessment'
-import { KnowledgeComponentId } from '../../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
 import { NodeType } from '../../../neo4j/NodeType'
 import { RelType } from '../../../neo4j/RelType'

@@ -1,6 +1,6 @@
 import { AssessmentId } from '../../domain/Assessment'
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../domain/LearningObjective'
 
 export type Schedule = Record<KnowledgeComponentId, number>
 
