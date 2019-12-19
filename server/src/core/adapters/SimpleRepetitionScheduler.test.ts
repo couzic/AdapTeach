@@ -1,9 +1,11 @@
+import 'mocha'
+
 import { expect } from 'chai'
 import { asSequence } from 'sequency'
 
 import { AssessmentId } from '../../domain/Assessment'
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../domain/LearningObjective'
 import { RepetitionScheduler, Schedule } from '../ports/RepetitionScheduler'
 import { createSimpleRepetitionScheduler } from './SimpleRepetitionScheduler'
 

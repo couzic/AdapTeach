@@ -1,7 +1,7 @@
 import { asSequence } from 'sequency'
 
 import { AssessmentHistory } from '../../domain/AssessmentHistory'
-import { KnowledgeComponentId } from '../../domain/KnowledgeComponent'
+import { KnowledgeComponentId } from '../../domain/LearningObjective'
 import { RepetitionScheduler, Schedule } from '../ports/RepetitionScheduler'
 import { TimeProvider } from '../ports/TimeProvider'
 
@@ -39,7 +39,10 @@ export const createSimpleRepetitionScheduler = (
               extractComponentHistory(kc.id, params.assessments)
             )
           } else {
-            repetitionDelay = repetitionDelayWhenFails(scheduledDelay, actualDelay)
+            repetitionDelay = repetitionDelayWhenFails(
+              scheduledDelay,
+              actualDelay
+            )
           }
         }
         schedule[kc.id] = now + repetitionDelay
@@ -67,7 +70,10 @@ const repetitionDelayWhenPasses = (
   }
 }
 
-const repetitionDelayWhenFails = (scheduledDelay: number, actualDelay: number) => {
+const repetitionDelayWhenFails = (
+  scheduledDelay: number,
+  actualDelay: number
+) => {
   if (actualDelay <= scheduledDelay) {
     return scheduledDelay * ON_FAILURE_DELAY_FACTOR
   } else if (scheduledDelay / actualDelay < ON_FAILURE_DELAY_FACTOR) {

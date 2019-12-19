@@ -16,7 +16,7 @@ import { CreateUser } from '../use-case/user/CreateUser'
 export const populateDb = async (core: Core) => {
   console.log('Start populating DB')
 
-  const createItem = createKcFactory(core)
+  const createKc = createKcFactory(core)
   const createComposite = createObjectiveFactory(core)
   const createMcq = createMcqFactory(core)
 
@@ -201,9 +201,10 @@ What value will be printed in the console ?`
   /////////
   const { id: userId } = await core.execute(
     CreateUser({
-      username: 'couzic',
-      email: 'mikaelcouzic@gmail.com'
-    } as any)
+      linkedInId: 'LinkedInUserId',
+      firstName: 'Mikael',
+      lastName: 'Couzic'
+    })
   )
   await core.execute(AddLearningObjective(userId, rxjsBasics))
 

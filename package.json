@@ -11,7 +11,8 @@
     "client": "nps client",
     "server": "nps server",
     "local": "nps local",
-    "db": "heroku addons:open graphenedb"
+    "db": "heroku addons:open graphenedb",
+    "sim": "nps sim"
   },
   "repository": {
     "type": "git",
