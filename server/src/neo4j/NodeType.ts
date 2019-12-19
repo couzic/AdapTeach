@@ -1,7 +1,7 @@
 export const NodeType = {
   Assessment: 'Assessment',
-  KnowledgeComponent: 'KC',
-  KnowledgeComposite: 'KnowledgeComposite',
-  LearningObjective: 'Objective',
+  Objective: 'Objective',
+  KC: 'KC',
+  Composite: 'Composite',
   User: 'User'
 }

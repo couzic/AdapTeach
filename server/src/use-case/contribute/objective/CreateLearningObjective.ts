@@ -25,9 +25,7 @@ export const CreateLearningObjective = (
 export const createCreateLearningObjectiveGateway = (): CreateLearningObjectiveGateway => ({
   createLearningObjective: async objective => {
     const statement = `
-      CREATE (objective:${NodeType.LearningObjective}:${
-      NodeType.KnowledgeComposite
-    } {
+      CREATE (objective:${NodeType.Composite}:${NodeType.Objective} {
         id: {id},
         name: {name},
         description: {description}

@@ -22,7 +22,7 @@ export const createAddPrerequisiteGateway = (): AddPrerequisiteGateway => ({
   addPrerequisite: async (assessmentId, preqId) => {
     const statement = `
         MATCH (assessment:${NodeType.Assessment} {id: {assessmentId}})
-        MATCH (preq:${NodeType.KnowledgeComposite} {id: {preqId}})
+        MATCH (preq:${NodeType.Objective} {id: {preqId}})
         CREATE (assessment) -[:${RelType.HAS_PREREQUISITE}]-> (preq)
         RETURN assessment`
     const records = await cypher.send(statement, {

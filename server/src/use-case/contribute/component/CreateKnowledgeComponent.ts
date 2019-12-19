@@ -25,7 +25,7 @@ export const CreateKnowledgeComponent = (
 export const createCreateKnowledgeComponentGateway = (): CreateKnowledgeComponentGateway => ({
   createKnowledgeComponent: async kc => {
     const statement = `
-      CREATE (kc:${NodeType.KnowledgeComponent}:${NodeType.KnowledgeComposite} {
+      CREATE (kc:${NodeType.KC}:${NodeType.Objective} {
         id: {id},
         name: {name},
         description: {description}

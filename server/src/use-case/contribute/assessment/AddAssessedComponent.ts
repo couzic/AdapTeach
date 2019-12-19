@@ -22,7 +22,7 @@ export const createAddAssessedComponentGateway = (): AddAssessedComponentGateway
   addAssessedComponent: async (assessmentId, componentId) => {
     const statement = `
         MATCH (assessment:${NodeType.Assessment} {id: {assessmentId}})
-        MATCH (component:${NodeType.KnowledgeComponent} {id: {componentId}})
+        MATCH (component:${NodeType.KC} {id: {componentId}})
         CREATE (assessment) -[:${RelType.ASSESSMENT_FOR}]-> (component)
         RETURN assessment`
     const records = await cypher.send(statement, { assessmentId, componentId })

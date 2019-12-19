@@ -23,7 +23,7 @@ export const createAddLearningObjectiveGateway = (): AddLearningObjectiveGateway
   addLearningObjective: async (userId, objectiveId) => {
     const statement = `
         MATCH (user:${NodeType.User} {id: {userId}})
-        MATCH (objective:${NodeType.LearningObjective} {id: {objectiveId}})
+        MATCH (objective:${NodeType.Composite} {id: {objectiveId}})
         CREATE (user) -[:${RelType.HAS_OBJECTIVE}]-> (objective)
         RETURN user`
     await cypher.send(statement, { userId, objectiveId })

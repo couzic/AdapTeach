@@ -23,8 +23,8 @@ export const AddToObjective = (
 export const createAddToObjectiveGateway = (): AddToObjectiveGateway => ({
   addToObjective: async (objectiveId, childId) => {
     const statement = `
-    MATCH   (objective:${NodeType.LearningObjective} {id: {objectiveId}})
-    MATCH   (child:${NodeType.KnowledgeComposite} {id: {childId}})
+    MATCH   (objective:${NodeType.Composite} {id: {objectiveId}})
+    MATCH   (child:${NodeType.Objective} {id: {childId}})
     CREATE  (objective) -[:${RelType.COMPOSED_OF}]-> (child)
     RETURN  objective`
     const records = await cypher.send(statement, { objectiveId, childId })
