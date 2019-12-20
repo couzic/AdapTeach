@@ -36,3 +36,4 @@ scripts:
     client: cd client && npm-check -u
     server: cd server && npm-check -u
   sim: cd server && npm run simulation
+  atdd: nps server.atdd

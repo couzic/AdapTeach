@@ -1,25 +1,25 @@
 import { UseCaseDependencies } from '../../../core/Core'
 import {
-  LearningObjective,
-  LearningObjectiveFields,
-  LearningObjectiveId
-} from '../../../domain/LearningObjective'
+  KnowledgeComposite,
+  KnowledgeCompositeFields
+} from '../../../domain/KnowledgeComposite'
+import { KnowledgeCompositeId } from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
 import { NodeType } from '../../../neo4j/NodeType'
 
 export interface CreateLearningObjectiveGateway {
   createLearningObjective: (
-    objective: LearningObjective
-  ) => Promise<LearningObjective>
+    objective: KnowledgeComposite
+  ) => Promise<KnowledgeComposite>
 }
 
 export const CreateLearningObjective = (
-  fields: LearningObjectiveFields
+  fields: KnowledgeCompositeFields
 ) => async ({ gateway, idFactory }: UseCaseDependencies) =>
   gateway.createLearningObjective({
     description: '',
     ...fields,
-    id: idFactory.createId() as LearningObjectiveId
+    id: idFactory.createId() as KnowledgeCompositeId
   })
 
 export const createCreateLearningObjectiveGateway = (): CreateLearningObjectiveGateway => ({

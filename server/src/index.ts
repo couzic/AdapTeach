@@ -16,6 +16,7 @@ import { createCoreGateway } from './core/CoreGateway'
 import { authRoute } from './routes/auth'
 import { helloRoute } from './routes/hello'
 import { kcRoute } from './routes/kc'
+import { objectiveRoute } from './routes/objective'
 import { userRoute } from './routes/user.'
 
 const app = new Koa()
@@ -109,7 +110,7 @@ const core = createCore(dependencies)
 /////////////
 // ROUTES //
 ///////////
-const routes = [authRoute, kcRoute, helloRoute, userRoute]
+const routes = [authRoute, kcRoute, objectiveRoute, helloRoute, userRoute]
 const router = new Router()
 routes.forEach(route => route(router, core))
 app.use(router.routes())

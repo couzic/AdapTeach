@@ -8,7 +8,7 @@ import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
 import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
-import { LearningObjective } from '../../domain/LearningObjective'
+import { KnowledgeComposite } from '../../domain/KnowledgeComposite'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { ActivateAssessment } from '../../use-case/contribute/assessment/ActivateAssessment'
@@ -18,9 +18,11 @@ import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers'
 import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion'
 import { CreateKnowledgeComponent } from '../../use-case/contribute/component/CreateKnowledgeComponent'
 import { FindKnowledgeComponentById } from '../../use-case/contribute/component/FindKnowledgeComponentById'
-import { SearchKnowledgeComponent } from '../../use-case/contribute/component/FindKnowledgeComponentByName'
+import { SearchKnowledgeComponent } from '../../use-case/contribute/component/SearchKnowledgeComponent'
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
+import { FindCompositeObjectiveById } from '../../use-case/contribute/objective/FindCompositeObjectiveById'
+import { SearchCompositeObjective } from '../../use-case/contribute/objective/SearchCompositeObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
 import { CheckAnswer } from '../../use-case/learn/CheckAnswer'
 import { FindNextAssessment } from '../../use-case/learn/FindNextAssessment'
@@ -36,7 +38,7 @@ describe('Single Knowledge Component scenario', () => {
   let core: Core
   let user: User
   let kc: KnowledgeComponent
-  let userObjective: LearningObjective
+  let userObjective: KnowledgeComposite
   let mcqFactory: McqFactory
   beforeEach(async () => {
     await cypher.clearDb()
@@ -73,6 +75,19 @@ describe('Single Knowledge Component scenario', () => {
     const searchResults = await core.execute(SearchKnowledgeComponent(kc.name))
     expect(searchResults).to.have.length(1)
     expect(searchResults[0].kc).to.deep.equal(kc)
+  })
+  it('finds Objective by ID', async () => {
+    const found = await core.execute(
+      FindCompositeObjectiveById(userObjective.id)
+    )
+    expect(found).to.deep.equal(userObjective)
+  })
+  it('finds Objective by name', async () => {
+    const searchResults = await core.execute(
+      SearchCompositeObjective(userObjective.name)
+    )
+    expect(searchResults).to.have.length(1)
+    expect(searchResults[0].objective).to.deep.equal(userObjective)
   })
   describe('given single inactive assessment', () => {
     let assessmentId: AssessmentId
