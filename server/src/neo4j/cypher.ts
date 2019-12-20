@@ -1,5 +1,6 @@
 import neo4j from 'neo4j-driver'
 
+import { createNeo4jIndexes } from './createNeo4jIndexes'
 import { CypherResult } from './CypherResult'
 
 const url = 'bolt://localhost'
@@ -49,3 +50,5 @@ const clearDb = async () => {
 }
 
 export const cypher = { send, session, clearDb }
+
+createNeo4jIndexes()

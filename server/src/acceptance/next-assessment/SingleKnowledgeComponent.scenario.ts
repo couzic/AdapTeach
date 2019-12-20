@@ -17,6 +17,8 @@ import { CreateAssessment } from '../../use-case/contribute/assessment/CreateAss
 import { SetAnswers } from '../../use-case/contribute/assessment/SetAnswers'
 import { SetQuestion } from '../../use-case/contribute/assessment/SetQuestion'
 import { CreateKnowledgeComponent } from '../../use-case/contribute/component/CreateKnowledgeComponent'
+import { FindKnowledgeComponentById } from '../../use-case/contribute/component/FindKnowledgeComponentById'
+import { SearchKnowledgeComponent } from '../../use-case/contribute/component/FindKnowledgeComponentByName'
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
 import { CreateLearningObjective } from '../../use-case/contribute/objective/CreateLearningObjective'
 import { AddLearningObjective } from '../../use-case/learn/AddLearningObjective'
@@ -62,6 +64,15 @@ describe('Single Knowledge Component scenario', () => {
     )
     await core.execute(AddToObjective(userObjective.id, kc.id))
     await core.execute(AddLearningObjective(user.id, userObjective.id))
+  })
+  it('finds KC by ID', async () => {
+    const foundKc = await core.execute(FindKnowledgeComponentById(kc.id))
+    expect(foundKc).to.deep.equal(kc)
+  })
+  it('finds KC by name', async () => {
+    const searchResults = await core.execute(SearchKnowledgeComponent(kc.name))
+    expect(searchResults).to.have.length(1)
+    expect(searchResults[0].kc).to.deep.equal(kc)
   })
   describe('given single inactive assessment', () => {
     let assessmentId: AssessmentId
