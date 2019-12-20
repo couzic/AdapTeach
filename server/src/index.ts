@@ -15,6 +15,7 @@ import { CoreDependencies, createCore } from './core/Core'
 import { createCoreGateway } from './core/CoreGateway'
 import { authRoute } from './routes/auth'
 import { helloRoute } from './routes/hello'
+import { kcRoute } from './routes/kc'
 import { userRoute } from './routes/user.'
 
 const app = new Koa()
@@ -43,6 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
 /////////////
 // ERRORS //
 ///////////
+// DEV CATCH ALL
 if (process.env.NODE_ENV !== 'production') {
   app.use(async (ctx, next) => {
     try {
@@ -61,6 +63,19 @@ if (process.env.NODE_ENV !== 'production') {
     }
   })
 }
+// Handle Boom errors
+app.use(async (ctx, next) => {
+  try {
+    await next()
+  } catch (e) {
+    if (e.isBoom) {
+      ctx.response.status = e.output.statusCode
+      ctx.body = e.output.payload
+    } else {
+      throw e
+    }
+  }
+})
 
 /////////////////
 // PARSE JSON //
@@ -94,7 +109,7 @@ const core = createCore(dependencies)
 /////////////
 // ROUTES //
 ///////////
-const routes = [authRoute, helloRoute, userRoute]
+const routes = [authRoute, kcRoute, helloRoute, userRoute]
 const router = new Router()
 routes.forEach(route => route(router, core))
 app.use(router.routes())

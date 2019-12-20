@@ -1,5 +1,7 @@
 import neo4j from 'neo4j-driver'
 
+import { CypherResult } from './CypherResult'
+
 const url = 'bolt://localhost'
 
 let driver: any
@@ -22,18 +24,21 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-const send = (statement, parameters) => {
+const send = async (
+  statement: string,
+  parameters: object
+): Promise<CypherResult['records']> => {
   const session = driver.session()
-  return session
-    .run(statement, parameters)
-    .then(function(result) {
-      session.close()
-      return result.records
-    })
-    .catch(error => {
-      console.error('Cypher Error', error)
-      session.close()
-    })
+  let result: CypherResult | null = null
+  try {
+    result = await session.run(statement, parameters)
+  } catch (e) {
+    console.error('Cypher Error', e)
+    throw e
+  } finally {
+    session.close()
+    return result ? result.records : []
+  }
 }
 
 const session = () => driver.session()
