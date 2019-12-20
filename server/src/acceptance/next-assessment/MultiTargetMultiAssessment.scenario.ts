@@ -6,7 +6,7 @@ import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
 import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
-import { LearningObjective } from '../../domain/LearningObjective'
+import { KnowledgeComposite } from '../../domain/KnowledgeComposite'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { AddToObjective } from '../../use-case/contribute/objective/AddToObjective'
@@ -29,7 +29,7 @@ describe('Multi-target multi-assessment scenario', () => {
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let userObjective: LearningObjective
+  let userObjective: KnowledgeComposite
   let createKc: KcFactory
   let createObjective: ObjectiveFactory
   let createMcq: McqFactory
@@ -55,7 +55,7 @@ describe('Multi-target multi-assessment scenario', () => {
     await core.execute(AddLearningObjective(user.id, userObjective.id))
   })
   describe(`
-     /      \\  <----- (firstAssessment)         
+     /      \\  <----- (firstAssessment)
     | firstKc |
      \\      /  <-- (multiTargetAssessment) --> (2 other kcs)
     `, () => {
@@ -132,7 +132,7 @@ describe('Multi-target multi-assessment scenario', () => {
     })
   })
   describe(`
-  /         \\  <-- (firstAssessment)         
+  /         \\  <-- (firstAssessment)
  | firstKc |  <-- (secondAssessment)
   \\         /  <-- (thirdAssessment) ---> (secondKc)
     given first assessment passed
@@ -163,7 +163,7 @@ describe('Multi-target multi-assessment scenario', () => {
     })
   })
   describe(`
-  /         \\  <-- (firstAssessment)         
+  /         \\  <-- (firstAssessment)
  | firstKc |  <-- (secondAssessment) --> (secondKc)
   \\         /  <-- (thirdAssessment) ---> (second & third kcs)
                 <-- (fourthAssessment) ---> (second, third & fourth kcs)

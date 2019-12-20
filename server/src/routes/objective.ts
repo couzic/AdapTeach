@@ -1,4 +1,5 @@
 import { KnowledgeCompositeFields } from '../domain/KnowledgeComposite'
+import { AddToObjective } from '../use-case/contribute/objective/AddToObjective'
 import { CreateLearningObjective } from '../use-case/contribute/objective/CreateLearningObjective'
 import { FindCompositeObjectiveById } from '../use-case/contribute/objective/FindCompositeObjectiveById'
 import { SearchCompositeObjective } from '../use-case/contribute/objective/SearchCompositeObjective'
@@ -26,5 +27,12 @@ export const objectiveRoute: Route = (router, core) => {
     const results = await core.execute(SearchCompositeObjective(q))
     ctx.status = 200
     ctx.body = results
+  })
+
+  router.put(path + '/:id/add/:componentId', async ctx => {
+    const { id, componentId } = ctx.params
+    const objective = await core.execute(AddToObjective(id, componentId))
+    ctx.status = 200
+    ctx.body = objective
   })
 }

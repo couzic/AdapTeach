@@ -80,7 +80,7 @@ describe('Single Knowledge Component scenario', () => {
     const found = await core.execute(
       FindCompositeObjectiveById(userObjective.id)
     )
-    expect(found).to.deep.equal(userObjective)
+    expect(found.id).to.deep.equal(userObjective.id)
   })
   it('finds Objective by name', async () => {
     const searchResults = await core.execute(

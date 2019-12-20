@@ -1,3 +1,4 @@
+import { KnowledgeComponent } from './KnowledgeComponent'
 import {
   KnowledgeCompositeId,
   LearningObjective,
@@ -8,4 +9,8 @@ export type KnowledgeCompositeFields = LearningObjectiveFields
 
 export interface KnowledgeComposite extends LearningObjective {
   id: KnowledgeCompositeId
+}
+
+export interface KnowledgeCompositeWithComponents extends KnowledgeComposite {
+  components: KnowledgeComponent
 }

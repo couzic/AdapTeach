@@ -6,7 +6,7 @@ import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
 import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
-import { LearningObjective } from '../../domain/LearningObjective'
+import { KnowledgeComposite } from '../../domain/KnowledgeComposite'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { AddPrerequisite } from '../../use-case/contribute/assessment/AddPrerequisite'
@@ -27,7 +27,7 @@ describe('Out of scope and Preqs scenario', () => {
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let userObjective: LearningObjective
+  let userObjective: KnowledgeComposite
   let createKc: KcFactory
   let createObjective: ObjectiveFactory
   let mcqFactory: McqFactory

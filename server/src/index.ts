@@ -46,24 +46,24 @@ if (process.env.NODE_ENV !== 'production') {
 // ERRORS //
 ///////////
 // DEV CATCH ALL
-if (process.env.NODE_ENV !== 'production') {
-  app.use(async (ctx, next) => {
-    try {
-      await next()
-    } catch (error) {
-      console.error(
-        'ERROR - ' +
-          ctx.request.method +
-          ' - ' +
-          ctx.response.status +
-          ' - ' +
-          ctx.request.url
-      )
-      // console.error(error)
-      ctx.throw(500, 'Internal Server Error')
-    }
-  })
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   app.use(async (ctx, next) => {
+//     try {
+//       await next()
+//     } catch (error) {
+//       console.error(
+//         'ERROR - ' +
+//           ctx.request.method +
+//           ' - ' +
+//           ctx.response.status +
+//           ' - ' +
+//           ctx.request.url
+//       )
+//       // console.error(error)
+//       ctx.throw(500, 'Internal Server Error')
+//     }
+//   })
+// }
 // Handle Boom errors
 app.use(async (ctx, next) => {
   try {

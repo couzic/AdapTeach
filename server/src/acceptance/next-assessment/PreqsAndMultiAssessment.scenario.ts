@@ -4,7 +4,7 @@ import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
 import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
-import { LearningObjective } from '../../domain/LearningObjective'
+import { KnowledgeComposite } from '../../domain/KnowledgeComposite'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { CreateKnowledgeComponent } from '../../use-case/contribute/component/CreateKnowledgeComponent'
@@ -22,7 +22,7 @@ describe('Preqs and multi-assessment scenario', () => {
   let core: Core
   let createAssessment: McqFactory
   let user: User
-  let objective: LearningObjective
+  let objective: KnowledgeComposite
   beforeEach(async () => {
     await cypher.clearDb()
     dependencies = {

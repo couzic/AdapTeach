@@ -8,7 +8,7 @@ import { Core, CoreDependencies, createCore } from '../../core/Core'
 import { createCoreGateway } from '../../core/CoreGateway'
 import { AssessmentId } from '../../domain/Assessment'
 import { KnowledgeComponent } from '../../domain/KnowledgeComponent'
-import { LearningObjective } from '../../domain/LearningObjective'
+import { KnowledgeComposite } from '../../domain/KnowledgeComposite'
 import { User } from '../../domain/User'
 import { cypher } from '../../neo4j/cypher'
 import { CreateKnowledgeComponent } from '../../use-case/contribute/component/CreateKnowledgeComponent'
@@ -33,7 +33,7 @@ describe('Multi-assessment scenario', () => {
   let dependencies: CoreDependencies
   let core: Core
   let user: User
-  let userObjective: LearningObjective
+  let userObjective: KnowledgeComposite
   let createKc: KcFactory
   let createObjective: ObjectiveFactory
   let createMcq: McqFactory

@@ -1,6 +1,7 @@
 import { UseCaseDependencies } from '../../../core/Core'
+import { KnowledgeComposite } from '../../../domain/KnowledgeComposite'
 import {
-  LearningObjective,
+  KnowledgeCompositeId,
   LearningObjectiveId
 } from '../../../domain/LearningObjective'
 import { cypher } from '../../../neo4j/cypher'
@@ -9,13 +10,13 @@ import { RelType } from '../../../neo4j/RelType'
 
 export interface AddToObjectiveGateway {
   addToObjective: (
-    objectiveId: LearningObjectiveId,
+    objectiveId: KnowledgeCompositeId,
     childId: LearningObjectiveId
-  ) => Promise<LearningObjective>
+  ) => Promise<KnowledgeComposite>
 }
 
 export const AddToObjective = (
-  objectiveId: LearningObjectiveId,
+  objectiveId: KnowledgeCompositeId,
   childId: LearningObjectiveId
 ) => async ({ gateway }: UseCaseDependencies) =>
   gateway.addToObjective(objectiveId, childId)
