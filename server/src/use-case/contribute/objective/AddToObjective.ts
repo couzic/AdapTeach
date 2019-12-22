@@ -1,5 +1,5 @@
 import { UseCaseDependencies } from '../../../core/Core'
-import { KnowledgeComposite } from '../../../domain/KnowledgeComposite'
+import { KnowledgeCompositeWithComponents } from '../../../domain/KnowledgeComposite'
 import {
   KnowledgeCompositeId,
   LearningObjectiveId
@@ -12,7 +12,7 @@ export interface AddToObjectiveGateway {
   addToObjective: (
     objectiveId: KnowledgeCompositeId,
     childId: LearningObjectiveId
-  ) => Promise<KnowledgeComposite>
+  ) => Promise<KnowledgeCompositeWithComponents>
 }
 
 export const AddToObjective = (
@@ -27,8 +27,18 @@ export const createAddToObjectiveGateway = (): AddToObjectiveGateway => ({
     MATCH   (objective:${NodeType.Composite} {id: {objectiveId}})
     MATCH   (child:${NodeType.Objective} {id: {childId}})
     CREATE  (objective) -[:${RelType.COMPOSED_OF}]-> (child)
-    RETURN  objective`
+    WITH objective
+    OPTIONAL MATCH (objective) -[:${RelType.COMPOSED_OF}]-> (component:${NodeType.KC})
+    OPTIONAL MATCH (objective) -[:${RelType.COMPOSED_OF}]-> (subObjective:${NodeType.Composite})
+    RETURN  objective, COLLECT(component) as components, COLLECT(subObjective) as subObjectives`
     const records = await cypher.send(statement, { objectiveId, childId })
-    return records[0].get('objective').properties
+    const objectiveProperties = records[0].get('objective').properties
+    const components = records[0].get('components').map(_ => _.properties)
+    const subObjectives = records[0].get('subObjectives').map(_ => _.properties)
+    return {
+      ...objectiveProperties,
+      components,
+      subObjectives
+    }
   }
 })

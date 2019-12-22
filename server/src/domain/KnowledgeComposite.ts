@@ -12,5 +12,6 @@ export interface KnowledgeComposite extends LearningObjective {
 }
 
 export interface KnowledgeCompositeWithComponents extends KnowledgeComposite {
-  components: KnowledgeComponent
+  components: KnowledgeComponent[]
+  subObjectives: KnowledgeComposite[]
 }
